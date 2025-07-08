@@ -1,25 +1,9 @@
 // ============================================================================
-// LIGHTBOX MANAGER - CONSOLIDATED SYSTEM
-// ============================================================================
-//
-// Complete lightbox system combining:
-// - Core functionality and navigation
-// - Inline editing capabilities
-// - AI metadata display and management
-// - Touch/keyboard controls
-// - Accessibility features
-//
-// Organization:
-// 1. Core Lightbox Class
-// 2. Editing Module Class
-// 3. Metadata Module Class
-// 4. Main Lightbox Manager Class
-// 5. Global Initialization
-//
+// LIGHTBOX MANAGER - FIXED VERSION (Disable trong Select Mode)
 // ============================================================================
 
 // ============================================================================
-// CORE LIGHTBOX CLASS
+// CORE LIGHTBOX CLASS - FIXED
 // ============================================================================
 
 class LightboxCore {
@@ -166,11 +150,27 @@ class LightboxCore {
         return '';
     }
     
+    // ✅ FIXED: Check edit mode trước khi mở lightbox
+    isEditSelectMode() {
+        // Check multiple ways edit select mode might be active
+        return (
+            document.body.classList.contains('edit-select-mode') ||
+            (window.editModeManager && window.editModeManager.currentMode === 'edit-select') ||
+            document.body.classList.contains('disable-lightbox')
+        );
+    }
+    
 	attachCoreEventListeners() {
 		this.log('Attaching core event listeners...');
 		
-		// Click on images to open lightbox
+		// ✅ FIXED: Click on images to open lightbox - Check edit mode trước
 		document.addEventListener('click', (e) => {
+			// ✅ KIỂM TRA EDIT SELECT MODE TRƯỚC TIÊN
+			if (this.isEditSelectMode()) {
+				this.log('🚫 Lightbox disabled in edit select mode');
+				return; // Không mở lightbox trong select mode
+			}
+			
 			const possibleTargets = [
 				e.target.closest('.artwork-container img'),
 				e.target.closest('.artwork img'),
@@ -187,6 +187,12 @@ class LightboxCore {
 			}
 			
 			if (img) {
+				// ✅ DOUBLE CHECK: Kiểm tra lại edit mode
+				if (this.isEditSelectMode()) {
+					this.log('🚫 Lightbox click blocked in select mode');
+					return;
+				}
+				
 				e.preventDefault();
 				const artwork = img.closest('.artwork') || img.closest('[data-id]') || img.parentElement;
 				
@@ -343,9 +349,15 @@ class LightboxCore {
     }
     
 	async open(target) {
+		// ✅ FINAL CHECK: Không mở lightbox trong select mode
+		if (this.isEditSelectMode()) {
+			this.log('🚫 Lightbox open blocked - in edit select mode');
+			return;
+		}
+		
 		this.log(`🚀 Opening lightbox with target:`, target);
 		
-		// ✅ FIXED: Thu thập lại images mỗi lần mở
+		// Thu thập lại images mỗi lần mở
 		const collectStart = performance.now();
 		this.collectImages();
 		const collectTime = performance.now() - collectStart;
@@ -353,7 +365,7 @@ class LightboxCore {
 		
 		let index = -1;
 		
-		// ✅ IMPROVED: Xử lý cả ID string và numeric index
+		// Xử lý cả ID string và numeric index
 		if (typeof target === 'string') {
 			// Truyền vào artwork ID
 			index = this.images.findIndex(img => img.id === target);
@@ -364,7 +376,7 @@ class LightboxCore {
 			this.log(`📍 Using direct index: ${index}`);
 		}
 		
-		// ✅ IMPROVED: Validation và error handling
+		// Validation và error handling
 		if (index === -1) {
 			this.log(`❌ Cannot find image with target:`, target);
 			this.log(`📋 Available images:`, this.images.map(img => `${img.id}`));
@@ -383,7 +395,7 @@ class LightboxCore {
 			return;
 		}
 		
-		// ✅ PROCEED: Mở lightbox (giữ nguyên phần này)
+		// Mở lightbox
 		this.currentIndex = index;
 		this.isOpen = true;
 		this.container.style.display = 'flex';
@@ -476,7 +488,7 @@ class LightboxCore {
 		
 		const newIndex = this.currentIndex + direction;
 		
-		// ✅ ADDED: Refresh images nếu index out of range
+		// Refresh images nếu index out of range
 		if (newIndex < 0 || newIndex >= this.images.length) {
 			this.log(`⚠️ Navigation out of range, refreshing images...`);
 			this.collectImages();
@@ -664,7 +676,7 @@ class LightboxCore {
 }
 
 // ============================================================================
-// EDITING MODULE CLASS
+// EDITING MODULE CLASS (unchanged)
 // ============================================================================
 
 class LightboxEditing {
@@ -898,8 +910,8 @@ class LightboxEditing {
 			this.core.elements.descriptionContainer.querySelector('.description-edit-controls');
 		
 		const saveBtn = controls.querySelector('.save-btn');
-		const originalHTML = saveBtn.innerHTML;  // ✅ LƯU HTML THAY VÌ TEXT
-		saveBtn.innerHTML = '⏳';  // ✅ DÙNG innerHTML
+		const originalHTML = saveBtn.innerHTML;
+		saveBtn.innerHTML = '⏳';
 		saveBtn.disabled = true;
 		
 		try {
@@ -963,7 +975,7 @@ class LightboxEditing {
 			
 			this.cancelEdit(type);
 		} finally {
-			saveBtn.innerHTML = originalHTML;  // ✅ RESTORE HTML ĐÚNG
+			saveBtn.innerHTML = originalHTML;
 			saveBtn.disabled = false;
 		}
 	}
@@ -1117,7 +1129,7 @@ class LightboxEditing {
 }
 
 // ============================================================================
-// METADATA MODULE CLASS
+// METADATA MODULE CLASS (unchanged)
 // ============================================================================
 
 class LightboxMetadata {
@@ -1425,7 +1437,7 @@ class LightboxMetadata {
 				const originalBg = button.style.background;
 				const originalColor = button.style.color;
 				
-				// ✅ FIXED: Check class để áp dụng transform phù hợp
+				// Check class để áp dụng transform phù hợp
 				let scaleTransform;
 				let resetTransform;
 				
@@ -1489,7 +1501,7 @@ class LightboxMetadata {
 }
 
 // ============================================================================
-// MAIN LIGHTBOX MANAGER CLASS
+// MAIN LIGHTBOX MANAGER CLASS - FIXED
 // ============================================================================
 
 class Lightbox extends LightboxCore {
@@ -1503,7 +1515,7 @@ class Lightbox extends LightboxCore {
         // Properly expose methods to global scope AFTER initialization
         this.exposeGlobalMethods();
         
-        console.log('✨ Enhanced Lightbox with See More and Inline Editing initialized');
+        console.log('✨ Enhanced Lightbox with Edit Mode Support initialized');
     }
     
     // Properly expose methods for HTML onclick handlers
@@ -1528,9 +1540,12 @@ class Lightbox extends LightboxCore {
 			// Utility methods
 			getCurrentImage: () => this.images[this.currentIndex],
 			isOpen: () => this.isOpen,
-			isEditing: () => this.editing.editingElement !== null, // ✅ ADDED: Dấu phẩy
+			isEditing: () => this.editing.editingElement !== null,
 			
-			// ✅ NEW: Utility methods
+			// Edit mode checking methods
+			isEditSelectMode: () => this.isEditSelectMode(),
+			
+			// Utility methods
 			refresh: () => this.collectImages(),
 			testPerformance: (iterations) => this.testCollectPerformance(iterations),
 			
@@ -1555,5 +1570,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Failed to expose lightbox methods globally');
     } else {
         console.log('✅ Lightbox methods exposed globally');
+        console.log('✅ Edit mode support: Lightbox disabled in select mode');
     }
 });
