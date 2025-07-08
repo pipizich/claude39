@@ -97,7 +97,7 @@ class ToastManager {
     return container;
   }
 
-  show(message, type = 'info', duration = 5000) {
+  show(message, type = 'info', duration = 1000) {
     // Check current toast count
     const currentToasts = this.container.querySelectorAll('.toast');
     
@@ -157,19 +157,19 @@ class ToastManager {
     toast.parentNode.removeChild(toast);
   }
 
-  success(message, duration = 4000) {
+  success(message, duration = 1000) {
     return this.show(message, 'success', duration);
   }
 
-  error(message, duration = 7000) {
+  error(message, duration = 1000) {
     return this.show(message, 'error', duration);
   }
 
-  warning(message, duration = 6000) {
+  warning(message, duration = 1000) {
     return this.show(message, 'warning', duration);
   }
 
-  info(message, duration = 4000) {
+  info(message, duration = 1000) {
     return this.show(message, 'info', duration);
   }
 
