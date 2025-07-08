@@ -1,11 +1,16 @@
 // ============================================================================
-// ENHANCED EDIT MODE MANAGER - 3 STATES SYSTEM
+// ENHANCED EDIT MODE MANAGER - 3 STATES SYSTEM (SIMPLIFIED UX)
 // ============================================================================
 //
 // States:
-// 1. NORMAL - Gallery bình thường với large cards
-// 2. EDIT_VIEW - Thumbnails nhỏ, có lightbox, không checkbox  
-// 3. EDIT_SELECT - Có checkbox, không lightbox, có action bar
+// 1. NORMAL - Gallery bình thường với large cards, có Edit Mode button
+// 2. EDIT_VIEW - Thumbnails nhỏ, có lightbox, có Back to Gallery button  
+// 3. EDIT_SELECT - Có checkbox, không lightbox, có Cancel Select button
+//
+// Clean UX Flow:
+// Normal ──[Edit Mode]──→ Edit View ──[Select]──→ Edit Select
+//   ↑                        ↑                     │
+//   └────[Back to Gallery]───┘       [Cancel]─────┘
 //
 // ============================================================================
 
@@ -65,13 +70,13 @@ class EditModeManager {
     
     createEditModeToggle() {
         const toggle = document.createElement('button');
-        toggle.className = 'edit-mode-toggle';
+        toggle.className = 'edit-mode-button'; // Changed from toggle to button
         toggle.innerHTML = '<i class="fa-light fa-pen-to-square"></i>';
-        toggle.title = 'Toggle Edit Mode';
-        toggle.setAttribute('aria-label', 'Toggle Edit Mode');
+        toggle.title = 'Enter Edit Mode';
+        toggle.setAttribute('aria-label', 'Enter Edit Mode');
         
         document.body.appendChild(toggle);
-        this.toggleButton = toggle;
+        this.toggleButton = toggle; // Note: still called toggleButton for code compatibility
     }
     
     createEditViewHeader() {
@@ -185,7 +190,7 @@ class EditModeManager {
             document.querySelector('.theme-toggle-container'),
             document.querySelector('.metadata-viewer-toggle'),
             document.querySelector('.fab'), // Add artwork button
-            document.querySelector('.edit-mode-toggle') // Will be handled separately
+            document.querySelector('.edit-mode-button') // Will be handled separately
         ].filter(Boolean);
     }
     
@@ -194,7 +199,7 @@ class EditModeManager {
     // ========================================================================
     
     setupEventListeners() {
-        // Toggle button - cycles between states
+        // Edit Mode button - simple entry point
         this.toggleButton.addEventListener('click', () => this.handleToggleClick());
         
         // Edit View Header buttons
@@ -247,16 +252,9 @@ class EditModeManager {
     // ========================================================================
     
     handleToggleClick() {
-        switch (this.currentMode) {
-            case this.MODES.NORMAL:
-                this.switchToMode(this.MODES.EDIT_VIEW);
-                break;
-            case this.MODES.EDIT_VIEW:
-                this.switchToMode(this.MODES.NORMAL);
-                break;
-            case this.MODES.EDIT_SELECT:
-                this.switchToMode(this.MODES.EDIT_VIEW);
-                break;
+        // Simple button - only goes from Normal to Edit View
+        if (this.currentMode === this.MODES.NORMAL) {
+            this.switchToMode(this.MODES.EDIT_VIEW);
         }
     }
     
@@ -318,6 +316,10 @@ class EditModeManager {
     
     enterNormalMode() {
         console.log('🎨 Entering Normal Gallery Mode');
+        
+        // Show edit button again
+        this.showEditButton();
+        
         // Default state - no special setup needed
     }
     
@@ -330,8 +332,9 @@ class EditModeManager {
         // Show edit view header
         this.editViewHeader.style.display = 'block';
         
-        // Hide floating buttons (except edit toggle)
+        // Hide floating buttons and edit button
         this.hideFloatingButtons();
+        this.hideEditButton();
         
         // Update counters
         this.updateCounters();
@@ -356,6 +359,9 @@ class EditModeManager {
         // Hide edit view header
         this.editViewHeader.style.display = 'none';
         
+        // Hide edit button completely (use Cancel Select instead)
+        this.hideEditButton();
+        
         // Add checkboxes
         this.addCheckboxes();
         
@@ -367,23 +373,11 @@ class EditModeManager {
     }
     
     updateToggleButton() {
-        switch (this.currentMode) {
-            case this.MODES.NORMAL:
-                this.toggleButton.classList.remove('active');
-                this.toggleButton.innerHTML = '<i class="fa-light fa-pen-to-square"></i>';
-                this.toggleButton.title = 'Enter Edit Mode';
-                break;
-            case this.MODES.EDIT_VIEW:
-                this.toggleButton.classList.add('active');
-                this.toggleButton.innerHTML = '<i class="fa-solid fa-times"></i>';
-                this.toggleButton.title = 'Exit Edit Mode';
-                break;
-            case this.MODES.EDIT_SELECT:
-                this.toggleButton.classList.add('active');
-                this.toggleButton.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-                this.toggleButton.title = 'Back to Edit View';
-                break;
-        }
+        // Simple button - always same appearance when visible
+        // Only shown in Normal Mode
+        this.toggleButton.classList.remove('active'); // No active states needed
+        this.toggleButton.innerHTML = '<i class="fa-light fa-pen-to-square"></i>';
+        this.toggleButton.title = 'Enter Edit Mode';
     }
     
     showModeToast(mode) {
@@ -394,10 +388,10 @@ class EditModeManager {
                 window.toast.success('Returned to normal gallery view');
                 break;
             case this.MODES.EDIT_VIEW:
-                window.toast.info('Edit Mode: Click thumbnails to open lightbox, or Select for batch operations');
+                window.toast.info('Edit Mode: Click thumbnails to open lightbox, or use "Select" for batch operations');
                 break;
             case this.MODES.EDIT_SELECT:
-                window.toast.info('Select Mode: Click thumbnails to select/deselect items');
+                window.toast.info('Select Mode: Click thumbnails to select/deselect items. Use "Cancel" to return.');
                 break;
         }
     }
@@ -737,6 +731,18 @@ class EditModeManager {
                 button.style.display = '';
             }
         });
+    }
+    
+    hideEditButton() {
+        if (this.toggleButton) {
+            this.toggleButton.style.display = 'none';
+        }
+    }
+    
+    showEditButton() {
+        if (this.toggleButton) {
+            this.toggleButton.style.display = '';
+        }
     }
     
     disableAnimations() {
