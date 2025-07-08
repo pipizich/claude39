@@ -1,691 +1,1065 @@
-/* =================================
-   ENHANCED EDIT MODE STYLES - 3 STATES SYSTEM
-   Optimized for PC only, minimal animations
-   ================================= */
-
-/* =================================
-   EDIT MODE TOGGLE BUTTON
-   ================================= */
-
-.edit-mode-toggle {
-    position: fixed;
-    top: 70px;
-    left: 20px;
-    z-index: 1000;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
-    transition: all 0.3s ease;
-}
-
-.edit-mode-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
-}
-
-.edit-mode-toggle.active {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-}
-
-/* Dark mode styles */
-[data-theme="dark"] .edit-mode-toggle {
-    background: linear-gradient(135deg, #50fa7b 0%, #5af78e 100%);
-    color: #0a0a0a;
-    box-shadow: 0 4px 15px rgba(80, 250, 123, 0.4);
-}
-
-[data-theme="dark"] .edit-mode-toggle.active {
-    background: linear-gradient(135deg, #ff5555 0%, #ff6b6b 100%);
-    color: white;
-}
-
-/* =================================
-   EDIT VIEW HEADER
-   ================================= */
-
-.edit-view-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px 20px;
-    z-index: 999;
-    border-bottom: 2px solid #4ecdc4;
-}
-
-[data-theme="dark"] .edit-view-header {
-    background: rgba(10, 10, 10, 0.98);
-    box-shadow: 0 2px 20px rgba(255, 107, 53, 0.2);
-    border-bottom: 2px solid #ff6b35;
-}
-
-.edit-view-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.edit-controls-left,
-.edit-controls-center,
-.edit-controls-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.edit-controls-center {
-    flex: 1;
-    justify-content: center;
-}
-
-/* Header buttons */
-.btn-back-gallery,
-.btn-enter-select,
-.btn-batch-upload {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'InterVariable','Inter', sans-serif;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-back-gallery {
-    background: #6b7280;
-}
-
-.btn-back-gallery:hover {
-    background: #4b5563;
-    transform: translateY(-1px);
-}
-
-.btn-enter-select {
-    background: #8b5cf6;
-}
-
-.btn-enter-select:hover {
-    background: #7c3aed;
-    transform: translateY(-1px);
-}
-
-.btn-batch-upload {
-    background: #10b981;
-}
-
-.btn-batch-upload:hover {
-    background: #059669;
-    transform: translateY(-1px);
-}
-
-.total-counter {
-    font-family: 'InterVariable','Inter', sans-serif;
-    font-weight: 600;
-    color: #4b5563;
-    padding: 8px 16px;
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 6px;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-[data-theme="dark"] .total-counter {
-    color: #8be9fd;
-    background: rgba(139, 233, 253, 0.1);
-    border-color: rgba(139, 233, 253, 0.2);
-}
-
-/* =================================
-   EDIT SELECT HEADER
-   ================================= */
-
-.edit-select-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px 20px;
-    z-index: 999;
-    border-bottom: 2px solid #8b5cf6;
-}
-
-[data-theme="dark"] .edit-select-header {
-    background: rgba(10, 10, 10, 0.98);
-    box-shadow: 0 2px 20px rgba(139, 92, 246, 0.2);
-    border-bottom: 2px solid #bd93f9;
-}
-
-.edit-select-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.btn-cancel-select,
-.btn-select-all {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'InterVariable','Inter', sans-serif;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-cancel-select:hover {
-    background: #dc2626;
-    transform: translateY(-1px);
-}
-
-.btn-select-all {
-    background: #3b82f6;
-}
-
-.btn-select-all:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
-}
-
-.selection-counter {
-    font-family: 'InterVariable','Inter', sans-serif;
-    font-weight: 600;
-    color: #4b5563;
-    padding: 8px 16px;
-    background: rgba(139, 92, 246, 0.1);
-    border-radius: 6px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-}
-
-[data-theme="dark"] .selection-counter {
-    color: #bd93f9;
-    background: rgba(189, 147, 249, 0.1);
-    border-color: rgba(189, 147, 249, 0.2);
-}
-
-/* =================================
-   ACTION BAR (BOTTOM)
-   ================================= */
-
-.edit-action-bar {
-    position: fixed;
-    bottom: -100px;
-    left: 0;
-    right: 0;
-    background: white;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    transition: bottom 0.3s ease;
-    border-top: 2px solid #8b5cf6;
-}
-
-.edit-action-bar.visible {
-    bottom: 0;
-}
-
-[data-theme="dark"] .edit-action-bar {
-    background: rgba(10, 10, 10, 0.98);
-    box-shadow: 0 -4px 30px rgba(139, 92, 246, 0.3);
-    border-top: 2px solid #bd93f9;
-}
-
-.action-btn {
-    padding: 12px 24px;
-    border-radius: 6px;
-    border: none;
-    font-family: 'InterVariable','Inter', sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-delete-selected {
-    background: #ef4444;
-    color: white;
-}
-
-.btn-delete-selected:hover {
-    background: #dc2626;
-    transform: translateY(-1px);
-}
-
-.btn-move-top {
-    background: #6366f1;
-    color: white;
-}
-
-.btn-move-top:hover {
-    background: #4f46e5;
-    transform: translateY(-1px);
-}
-
-.btn-move-bottom {
-    background: #8b5cf6;
-    color: white;
-}
-
-.btn-move-bottom:hover {
-    background: #7c3aed;
-    transform: translateY(-1px);
-}
-
-/* =================================
-   GALLERY STATES
-   ================================= */
-
-/* Normal mode - default gallery styles */
-.artwork {
-    width: calc(20% - 16px);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Edit View Mode - small thumbnails, no info */
-.edit-view-mode .artwork {
-    width: 150px !important;
-    margin-bottom: 20px;
-    transition: none !important;
-}
-
-.edit-view-mode .artwork-container {
-    height: 150px;
-}
-
-.edit-view-mode .artwork-container img {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    transition: none !important;
-    transform: none !important;
-}
-
-.edit-view-mode .artwork-info {
-    display: none !important;
-}
-
-.edit-view-mode .artwork-actions {
-    display: none !important;
-}
-
-.edit-view-mode .artwork:hover {
-    transform: none !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Edit Select Mode - show checkboxes */
-.edit-select-mode .artwork-checkbox {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 4px;
-}
-
-.edit-select-mode .artwork-checkbox:checked {
-    accent-color: #3b82f6;
-}
-
-/* Selected artwork overlay */
-.edit-select-mode .artwork.selected::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(59, 130, 246, 0.2);
-    pointer-events: none;
-    border: 2px solid #3b82f6;
-    border-radius: 8px;
-}
-
-[data-theme="dark"] .edit-select-mode .artwork.selected::after {
-    background: rgba(80, 250, 123, 0.3);
-    border-color: #50fa7b;
-}
-
-/* Hide checkbox by default */
-.artwork-checkbox {
-    display: none;
-    opacity: 0;
-    visibility: hidden;
-}
-
-/* Disable lightbox in select mode */
-.edit-select-mode .artwork {
-    cursor: pointer;
-}
-
-.edit-select-mode .artwork img {
-    pointer-events: none;
-}
-
-/* =================================
-   BATCH UPLOAD MODAL (REUSED)
-   ================================= */
-
-.batch-upload-modal {
-    display: none;
-    position: fixed;
-    z-index: 1001;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.batch-upload-content {
-    position: relative;
-    background-color: var(--background-color);
-    margin: 5% auto;
-    padding: 30px;
-    border-radius: 12px;
-    width: 80%;
-    max-width: 800px;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.batch-drop-zone {
-    border: 3px dashed var(--border-color);
-    padding: 40px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.02);
-}
-
-.batch-drop-zone:hover {
-    border-color: var(--button-color);
-    background: rgba(0, 0, 0, 0.05);
-}
-
-.batch-drop-zone.dragover {
-    background: rgba(78, 205, 196, 0.1);
-    border-color: #4ecdc4;
-}
-
-.batch-preview-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.batch-preview-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.batch-preview-item img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-}
-
-.batch-preview-item .remove-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-}
-
-.batch-upload-progress {
-    margin-top: 20px;
-}
-
-.progress-item {
-    margin-bottom: 10px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 20px;
-    background: #f0f0f0;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-    width: 0%;
-    transition: width 0.3s ease;
-}
-
-/* =================================
-   PERFORMANCE OPTIMIZATIONS
-   ================================= */
-
-/* Disable animations in edit modes */
-.edit-view-mode .artwork,
-.edit-select-mode .artwork {
-    will-change: auto !important;
-    animation: none !important;
-    transition: none !important;
-}
-
-.edit-view-mode .artwork:hover,
-.edit-select-mode .artwork:hover {
-    transform: none !important;
-    animation: none !important;
-}
-
-/* Contain layout changes */
-.edit-view-mode .gallery,
-.edit-select-mode .gallery {
-    contain: layout style;
-}
-
-/* Force GPU layer for smooth interactions */
-.edit-view-mode .artwork-container,
-.edit-select-mode .artwork-container {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-}
-
-/* =================================
-   ACCESSIBILITY
-   ================================= */
-
-.btn-back-gallery:focus,
-.btn-enter-select:focus,
-.btn-batch-upload:focus,
-.btn-cancel-select:focus,
-.btn-select-all:focus,
-.action-btn:focus {
-    outline: 2px solid var(--button-color);
-    outline-offset: 2px;
-}
-
-.artwork-checkbox:focus {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
-}
-
-/* =================================
-   RESPONSIVE GRID ADJUSTMENTS
-   ================================= */
-
-/* Ensure proper grid layout in edit modes */
-.edit-view-mode .gallery,
-.edit-select-mode .gallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: flex-start;
-}
-
-/* Thumbnail hover effects in edit view (subtle) */
-.edit-view-mode .artwork:hover {
-    opacity: 0.8;
-}
-
-.edit-select-mode .artwork:hover {
-    opacity: 0.9;
-}
-
-/* Selected item indication */
-.edit-select-mode .artwork.selected {
-    opacity: 1;
-}
-
-/* =================================
-   FLOATING BUTTONS MANAGEMENT
-   ================================= */
-
-/* Hide floating buttons in edit modes */
-.edit-view-mode .theme-toggle-container,
-.edit-view-mode .metadata-viewer-toggle,
-.edit-view-mode .fab,
-.edit-select-mode .theme-toggle-container,
-.edit-select-mode .metadata-viewer-toggle,
-.edit-select-mode .fab {
-    display: none !important;
-}
-
-/* Keep edit toggle visible but adjust position */
-.edit-view-mode .edit-mode-toggle,
-.edit-select-mode .edit-mode-toggle {
-    top: 20px;
-    left: 20px;
-}
-
-/* =================================
-   BODY PADDING ADJUSTMENTS
-   ================================= */
-
-.edit-view-mode,
-.edit-select-mode {
-    padding-top: 80px;
-}
-
-/* =================================
-   DARK MODE SPECIFIC STYLES
-   ================================= */
-
-[data-theme="dark"] .btn-back-gallery,
-[data-theme="dark"] .btn-enter-select,
-[data-theme="dark"] .btn-batch-upload,
-[data-theme="dark"] .btn-cancel-select,
-[data-theme="dark"] .btn-select-all {
-    background: linear-gradient(135deg, rgba(80, 250, 123, 0.9) 0%, rgba(139, 233, 253, 0.9) 100%);
-    color: #0a0a0a;
-    font-weight: 600;
-}
-
-[data-theme="dark"] .btn-delete-selected {
-    background: linear-gradient(135deg, #ff5555 0%, #ff6b6b 100%);
-    color: white;
-}
-
-[data-theme="dark"] .btn-move-top,
-[data-theme="dark"] .btn-move-bottom {
-    background: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
-    color: #0a0a0a;
-    font-weight: 600;
-}
-
-/* =================================
-   SCROLLBAR STYLING
-   ================================= */
-
-[data-theme="dark"] .edit-view-mode ::-webkit-scrollbar,
-[data-theme="dark"] .edit-select-mode ::-webkit-scrollbar {
-    width: 8px;
-}
-
-[data-theme="dark"] .edit-view-mode ::-webkit-scrollbar-track,
-[data-theme="dark"] .edit-select-mode ::-webkit-scrollbar-track {
-    background: #0a0a0a;
-}
-
-[data-theme="dark"] .edit-view-mode ::-webkit-scrollbar-thumb,
-[data-theme="dark"] .edit-select-mode ::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #bd93f9, #ff79c6);
-    border-radius: 4px;
-}
-
-/* =================================
-   TRANSITIONS FOR SMOOTH STATE CHANGES
-   ================================= */
-
-.edit-view-header,
-.edit-select-header,
-.edit-action-bar {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.artwork-checkbox {
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-/* =================================
-   ERROR STATES AND LOADING
-   ================================= */
-
-.edit-mode-loading {
-    opacity: 0.5;
-    pointer-events: none;
-}
-
-.edit-mode-error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid #ef4444;
-    color: #dc2626;
-    padding: 10px;
-    border-radius: 6px;
-    margin: 10px 0;
-}
+// ============================================================================
+// ENHANCED EDIT MODE MANAGER - 3 STATES SYSTEM
+// ============================================================================
+//
+// States:
+// 1. NORMAL - Gallery bình thường với large cards
+// 2. EDIT_VIEW - Thumbnails nhỏ, có lightbox, không checkbox  
+// 3. EDIT_SELECT - Có checkbox, không lightbox, có action bar
+//
+// ============================================================================
+
+class EditModeManager {
+    constructor() {
+        // State definitions
+        this.MODES = {
+            NORMAL: 'normal',
+            EDIT_VIEW: 'edit-view', 
+            EDIT_SELECT: 'edit-select'
+        };
+        
+        this.currentMode = this.MODES.NORMAL;
+        this.selectedItems = new Set();
+        
+        // UI Elements
+        this.toggleButton = null;
+        this.editViewHeader = null;
+        this.editSelectHeader = null;
+        this.actionBar = null;
+        this.floatingButtons = [];
+        
+        // State tracking
+        this.originalBodyPadding = '';
+        
+        this.init();
+    }
+    
+    init() {
+        console.log('🔧 Initializing Enhanced Edit Mode Manager...');
+        
+        // Create UI elements
+        this.createEditModeToggle();
+        this.createEditViewHeader();
+        this.createEditSelectHeader();
+        this.createActionBar();
+        this.createBatchUploadModal();
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        // Find floating buttons
+        this.findFloatingButtons();
+        
+        // Check restore state
+        if (sessionStorage.getItem('restoreEditMode') === 'true') {
+            sessionStorage.removeItem('restoreEditMode');
+            setTimeout(() => this.switchToMode(this.MODES.EDIT_VIEW), 100);
+        }
+        
+        console.log('✅ Enhanced Edit Mode Manager initialized');
+    }
+    
+    // ========================================================================
+    // UI CREATION METHODS
+    // ========================================================================
+    
+    createEditModeToggle() {
+        const toggle = document.createElement('button');
+        toggle.className = 'edit-mode-toggle';
+        toggle.innerHTML = '<i class="fa-light fa-pen-to-square"></i>';
+        toggle.title = 'Toggle Edit Mode';
+        toggle.setAttribute('aria-label', 'Toggle Edit Mode');
+        
+        document.body.appendChild(toggle);
+        this.toggleButton = toggle;
+    }
+    
+    createEditViewHeader() {
+        const header = document.createElement('div');
+        header.className = 'edit-view-header';
+        header.style.display = 'none';
+        header.innerHTML = `
+            <div class="edit-view-controls">
+                <div class="edit-controls-left">
+                    <button class="btn-back-gallery">
+                        <i class="fas fa-arrow-left"></i> Back to Gallery
+                    </button>
+                </div>
+                <div class="edit-controls-center">
+                    <button class="btn-enter-select">
+                        <i class="fas fa-check-square"></i> Select
+                    </button>
+                    <button class="btn-batch-upload">
+                        <i class="fas fa-plus"></i> Batch Upload
+                    </button>
+                </div>
+                <div class="edit-controls-right">
+                    <span class="total-counter">
+                        <i class="fas fa-images"></i> <span id="total-count">0</span> items
+                    </span>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(header);
+        this.editViewHeader = header;
+    }
+    
+    createEditSelectHeader() {
+        const header = document.createElement('div');
+        header.className = 'edit-select-header';
+        header.style.display = 'none';
+        header.innerHTML = `
+            <div class="edit-select-controls">
+                <div class="edit-controls-left">
+                    <button class="btn-cancel-select">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div class="edit-controls-right">
+                    <button class="btn-select-all">
+                        <i class="fas fa-check-square"></i> Select All
+                    </button>
+                    <span class="selection-counter">
+                        <i class="fas fa-chart-bar"></i> Selected: <span id="selected-count">0</span>/<span id="select-total-count">0</span>
+                    </span>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(header);
+        this.editSelectHeader = header;
+    }
+    
+    createActionBar() {
+        const actionBar = document.createElement('div');
+        actionBar.className = 'edit-action-bar';
+        actionBar.innerHTML = `
+            <button class="action-btn btn-delete-selected">
+                <i class="fas fa-trash"></i> Delete Selected
+            </button>
+            <button class="action-btn btn-move-top">
+                <i class="fas fa-arrow-up"></i> Move to Top
+            </button>
+            <button class="action-btn btn-move-bottom">
+                <i class="fas fa-arrow-down"></i> Move to Bottom
+            </button>
+        `;
+        
+        document.body.appendChild(actionBar);
+        this.actionBar = actionBar;
+    }
+    
+    createBatchUploadModal() {
+        const modal = document.createElement('div');
+        modal.className = 'batch-upload-modal';
+        modal.innerHTML = `
+            <div class="batch-upload-content">
+                <span class="close">&times;</span>
+                <h2>Batch Upload Images</h2>
+                <div class="batch-drop-zone">
+                    <p><i class="fas fa-cloud-upload-alt fa-3x"></i></p>
+                    <p>Drag & drop multiple images here</p>
+                    <p>or click to select files</p>
+                    <input type="file" id="batch-file-input" multiple accept="image/*" hidden>
+                </div>
+                <div class="batch-preview-grid" id="batch-preview-grid"></div>
+                <div class="batch-upload-progress" id="batch-upload-progress" style="display: none;"></div>
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="btn-submit" id="start-batch-upload" style="display: none;">
+                        Upload All Images
+                    </button>
+                    <button class="btn-cancel" id="cancel-batch-upload">Cancel</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        this.batchUploadModal = modal;
+        this.batchFiles = [];
+    }
+    
+    findFloatingButtons() {
+        // Find all floating buttons that should be hidden in edit modes
+        this.floatingButtons = [
+            document.querySelector('.theme-toggle-container'),
+            document.querySelector('.metadata-viewer-toggle'),
+            document.querySelector('.fab'), // Add artwork button
+            document.querySelector('.edit-mode-toggle') // Will be handled separately
+        ].filter(Boolean);
+    }
+    
+    // ========================================================================
+    // EVENT LISTENERS SETUP
+    // ========================================================================
+    
+    setupEventListeners() {
+        // Toggle button - cycles between states
+        this.toggleButton.addEventListener('click', () => this.handleToggleClick());
+        
+        // Edit View Header buttons
+        this.editViewHeader.querySelector('.btn-back-gallery').addEventListener('click', () => {
+            this.switchToMode(this.MODES.NORMAL);
+        });
+        
+        this.editViewHeader.querySelector('.btn-enter-select').addEventListener('click', () => {
+            this.switchToMode(this.MODES.EDIT_SELECT);
+        });
+        
+        this.editViewHeader.querySelector('.btn-batch-upload').addEventListener('click', () => {
+            this.openBatchUpload();
+        });
+        
+        // Edit Select Header buttons
+        this.editSelectHeader.querySelector('.btn-cancel-select').addEventListener('click', () => {
+            this.switchToMode(this.MODES.EDIT_VIEW);
+        });
+        
+        this.editSelectHeader.querySelector('.btn-select-all').addEventListener('click', () => {
+            this.toggleSelectAll();
+        });
+        
+        // Action Bar buttons
+        this.actionBar.querySelector('.btn-delete-selected').addEventListener('click', () => {
+            this.deleteSelected();
+        });
+        
+        this.actionBar.querySelector('.btn-move-top').addEventListener('click', () => {
+            this.moveSelectedToTop();
+        });
+        
+        this.actionBar.querySelector('.btn-move-bottom').addEventListener('click', () => {
+            this.moveSelectedToBottom();
+        });
+        
+        // Gallery click handling with mode-specific behavior
+        document.addEventListener('click', (e) => this.handleGalleryClick(e));
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+        
+        // Batch upload setup
+        this.setupBatchUpload();
+    }
+    
+    // ========================================================================
+    // STATE MANAGEMENT METHODS
+    // ========================================================================
+    
+    handleToggleClick() {
+        switch (this.currentMode) {
+            case this.MODES.NORMAL:
+                this.switchToMode(this.MODES.EDIT_VIEW);
+                break;
+            case this.MODES.EDIT_VIEW:
+                this.switchToMode(this.MODES.NORMAL);
+                break;
+            case this.MODES.EDIT_SELECT:
+                this.switchToMode(this.MODES.EDIT_VIEW);
+                break;
+        }
+    }
+    
+    switchToMode(newMode) {
+        console.log(`🔄 Switching from ${this.currentMode} to ${newMode}`);
+        
+        // Exit current mode
+        this.exitCurrentMode();
+        
+        // Enter new mode
+        this.currentMode = newMode;
+        this.enterNewMode(newMode);
+        
+        // Update toggle button state
+        this.updateToggleButton();
+        
+        // Show appropriate toast
+        this.showModeToast(newMode);
+    }
+    
+    exitCurrentMode() {
+        // Remove all mode classes
+        document.body.classList.remove('edit-view-mode', 'edit-select-mode');
+        
+        // Hide all headers and action bar
+        this.editViewHeader.style.display = 'none';
+        this.editSelectHeader.style.display = 'none';
+        this.actionBar.classList.remove('visible');
+        
+        // Show floating buttons
+        this.showFloatingButtons();
+        
+        // Remove checkboxes
+        this.removeCheckboxes();
+        
+        // Clear selections
+        this.clearAllSelections();
+        
+        // Restore body padding
+        document.body.style.paddingTop = this.originalBodyPadding;
+        
+        // Re-enable animations and interactions
+        this.enableAnimations();
+    }
+    
+    enterNewMode(mode) {
+        switch (mode) {
+            case this.MODES.NORMAL:
+                this.enterNormalMode();
+                break;
+            case this.MODES.EDIT_VIEW:
+                this.enterEditViewMode();
+                break;
+            case this.MODES.EDIT_SELECT:
+                this.enterEditSelectMode();
+                break;
+        }
+    }
+    
+    enterNormalMode() {
+        console.log('🎨 Entering Normal Gallery Mode');
+        // Default state - no special setup needed
+    }
+    
+    enterEditViewMode() {
+        console.log('📝 Entering Edit View Mode');
+        
+        // Add mode class
+        document.body.classList.add('edit-view-mode');
+        
+        // Show edit view header
+        this.editViewHeader.style.display = 'block';
+        
+        // Hide floating buttons (except edit toggle)
+        this.hideFloatingButtons();
+        
+        // Update counters
+        this.updateCounters();
+        
+        // Add body padding for header
+        this.originalBodyPadding = document.body.style.paddingTop;
+        document.body.style.paddingTop = '80px';
+        
+        // Disable heavy animations for performance
+        this.disableAnimations();
+    }
+    
+    enterEditSelectMode() {
+        console.log('☑️ Entering Edit Select Mode');
+        
+        // Add mode classes
+        document.body.classList.add('edit-view-mode', 'edit-select-mode');
+        
+        // Show edit select header
+        this.editSelectHeader.style.display = 'block';
+        
+        // Hide edit view header
+        this.editViewHeader.style.display = 'none';
+        
+        // Add checkboxes
+        this.addCheckboxes();
+        
+        // Update counters
+        this.updateCounters();
+        
+        // Disable lightbox interactions
+        this.disableLightboxInteractions();
+    }
+    
+    updateToggleButton() {
+        switch (this.currentMode) {
+            case this.MODES.NORMAL:
+                this.toggleButton.classList.remove('active');
+                this.toggleButton.innerHTML = '<i class="fa-light fa-pen-to-square"></i>';
+                this.toggleButton.title = 'Enter Edit Mode';
+                break;
+            case this.MODES.EDIT_VIEW:
+                this.toggleButton.classList.add('active');
+                this.toggleButton.innerHTML = '<i class="fa-solid fa-times"></i>';
+                this.toggleButton.title = 'Exit Edit Mode';
+                break;
+            case this.MODES.EDIT_SELECT:
+                this.toggleButton.classList.add('active');
+                this.toggleButton.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+                this.toggleButton.title = 'Back to Edit View';
+                break;
+        }
+    }
+    
+    showModeToast(mode) {
+        if (!window.toast) return;
+        
+        switch (mode) {
+            case this.MODES.NORMAL:
+                window.toast.success('Returned to normal gallery view');
+                break;
+            case this.MODES.EDIT_VIEW:
+                window.toast.info('Edit Mode: Click thumbnails to open lightbox, or Select for batch operations');
+                break;
+            case this.MODES.EDIT_SELECT:
+                window.toast.info('Select Mode: Click thumbnails to select/deselect items');
+                break;
+        }
+    }
+    
+    // ========================================================================
+    // INTERACTION HANDLING
+    // ========================================================================
+    
+    handleGalleryClick(e) {
+        const artwork = e.target.closest('.artwork');
+        if (!artwork) return;
+        
+        const isCheckboxClick = e.target.classList.contains('artwork-checkbox');
+        
+        switch (this.currentMode) {
+            case this.MODES.NORMAL:
+                // Normal behavior - handled by other scripts
+                break;
+                
+            case this.MODES.EDIT_VIEW:
+                // Allow lightbox to open - handled by lightbox script
+                break;
+                
+            case this.MODES.EDIT_SELECT:
+                // Only handle selection, prevent lightbox
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (!isCheckboxClick) {
+                    // Click on artwork toggles checkbox
+                    const checkbox = artwork.querySelector('.artwork-checkbox');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        this.handleSelectionChange(artwork, checkbox.checked);
+                    }
+                }
+                break;
+        }
+    }
+    
+    handleKeyboard(e) {
+        // Only handle shortcuts in edit modes
+        if (this.currentMode === this.MODES.NORMAL) return;
+        
+        switch (e.key) {
+            case 'Escape':
+                if (this.currentMode === this.MODES.EDIT_SELECT) {
+                    this.switchToMode(this.MODES.EDIT_VIEW);
+                } else if (this.currentMode === this.MODES.EDIT_VIEW) {
+                    this.switchToMode(this.MODES.NORMAL);
+                }
+                break;
+                
+            case 'a':
+                if (e.ctrlKey && this.currentMode === this.MODES.EDIT_SELECT) {
+                    e.preventDefault();
+                    this.toggleSelectAll();
+                }
+                break;
+                
+            case 'Delete':
+                if (this.currentMode === this.MODES.EDIT_SELECT && this.selectedItems.size > 0) {
+                    e.preventDefault();
+                    this.deleteSelected();
+                }
+                break;
+        }
+    }
+    
+    // ========================================================================
+    // CHECKBOX AND SELECTION MANAGEMENT
+    // ========================================================================
+    
+    addCheckboxes() {
+        const artworks = document.querySelectorAll('.artwork');
+        artworks.forEach(artwork => {
+            if (!artwork.querySelector('.artwork-checkbox')) {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'artwork-checkbox';
+                checkbox.dataset.id = artwork.dataset.id;
+                
+                const container = artwork.querySelector('.artwork-container');
+                container.appendChild(checkbox);
+                
+                // Checkbox change event
+                checkbox.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    this.handleSelectionChange(artwork, e.target.checked);
+                });
+            }
+        });
+    }
+    
+    removeCheckboxes() {
+        document.querySelectorAll('.artwork-checkbox').forEach(checkbox => {
+            checkbox.remove();
+        });
+    }
+    
+    handleSelectionChange(artwork, isSelected) {
+        const id = artwork.dataset.id;
+        
+        if (isSelected) {
+            this.selectedItems.add(id);
+            artwork.classList.add('selected');
+        } else {
+            this.selectedItems.delete(id);
+            artwork.classList.remove('selected');
+        }
+        
+        this.updateCounters();
+        this.updateActionBar();
+    }
+    
+    toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('.artwork-checkbox');
+        const allSelected = checkboxes.length === this.selectedItems.size;
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allSelected;
+            const artwork = checkbox.closest('.artwork');
+            this.handleSelectionChange(artwork, !allSelected);
+        });
+        
+        // Update button text
+        const btn = this.editSelectHeader.querySelector('.btn-select-all');
+        btn.innerHTML = allSelected ? 
+            '<i class="fas fa-check-square"></i> Select All' : 
+            '<i class="fas fa-square"></i> Deselect All';
+    }
+    
+    clearAllSelections() {
+        this.selectedItems.clear();
+        document.querySelectorAll('.artwork.selected').forEach(artwork => {
+            artwork.classList.remove('selected');
+            const checkbox = artwork.querySelector('.artwork-checkbox');
+            if (checkbox) checkbox.checked = false;
+        });
+        this.updateCounters();
+        this.updateActionBar();
+    }
+    
+    updateCounters() {
+        const totalArtworks = document.querySelectorAll('.artwork').length;
+        
+        // Update total counter in edit view
+        const totalCounter = document.getElementById('total-count');
+        if (totalCounter) {
+            totalCounter.textContent = totalArtworks;
+        }
+        
+        // Update selection counter in edit select
+        const selectedCounter = document.getElementById('selected-count');
+        const selectTotalCounter = document.getElementById('select-total-count');
+        
+        if (selectedCounter) {
+            selectedCounter.textContent = this.selectedItems.size;
+        }
+        if (selectTotalCounter) {
+            selectTotalCounter.textContent = totalArtworks;
+        }
+    }
+    
+    updateActionBar() {
+        if (this.currentMode === this.MODES.EDIT_SELECT) {
+            if (this.selectedItems.size > 0) {
+                this.actionBar.classList.add('visible');
+            } else {
+                this.actionBar.classList.remove('visible');
+            }
+        } else {
+            this.actionBar.classList.remove('visible');
+        }
+    }
+    
+    // ========================================================================
+    // BATCH OPERATIONS
+    // ========================================================================
+    
+    async deleteSelected() {
+        if (this.selectedItems.size === 0) return;
+        
+        const count = this.selectedItems.size;
+        const confirmed = confirm(`Are you sure you want to delete ${count} selected items?`);
+        
+        if (!confirmed) return;
+        
+        if (window.toast) {
+            window.toast.info(`Deleting ${count} items...`);
+        }
+        
+        try {
+            const deletePromises = Array.from(this.selectedItems).map(async (id) => {
+                const response = await fetch(`/delete/${id}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const artwork = document.querySelector(`[data-id="${id}"]`);
+                    if (artwork) {
+                        artwork.remove();
+                    }
+                }
+                
+                return response;
+            });
+            
+            await Promise.all(deletePromises);
+            
+            this.clearAllSelections();
+            this.updateCounters();
+            
+            if (window.toast) {
+                window.toast.success(`Successfully deleted ${count} items!`);
+            }
+            
+            if (window.artGalleryApp?.updateImageCounter) {
+                window.artGalleryApp.updateImageCounter();
+            }
+            
+        } catch (error) {
+            console.error('Delete error:', error);
+            if (window.toast) {
+                window.toast.error('Failed to delete some items');
+            }
+        }
+    }
+    
+    async moveSelectedToTop() {
+        if (this.selectedItems.size === 0) return;
+        
+        if (window.toast) {
+            window.toast.info(`Moving ${this.selectedItems.size} items to top...`);
+        }
+        
+        const gallery = document.getElementById('gallery');
+        const selectedElements = [];
+        const otherElements = [];
+        
+        Array.from(gallery.children).forEach(artwork => {
+            if (this.selectedItems.has(artwork.dataset.id)) {
+                selectedElements.push(artwork);
+            } else {
+                otherElements.push(artwork);
+            }
+        });
+        
+        // Reorder DOM
+        gallery.innerHTML = '';
+        selectedElements.forEach(el => gallery.appendChild(el));
+        otherElements.forEach(el => gallery.appendChild(el));
+        
+        // Update server
+        await this.updateServerOrder();
+        
+        this.clearAllSelections();
+        
+        if (window.toast) {
+            window.toast.success('Items moved to top!');
+        }
+    }
+    
+    async moveSelectedToBottom() {
+        if (this.selectedItems.size === 0) return;
+        
+        if (window.toast) {
+            window.toast.info(`Moving ${this.selectedItems.size} items to bottom...`);
+        }
+        
+        const gallery = document.getElementById('gallery');
+        const selectedElements = [];
+        const otherElements = [];
+        
+        Array.from(gallery.children).forEach(artwork => {
+            if (this.selectedItems.has(artwork.dataset.id)) {
+                selectedElements.push(artwork);
+            } else {
+                otherElements.push(artwork);
+            }
+        });
+        
+        // Reorder DOM
+        gallery.innerHTML = '';
+        otherElements.forEach(el => gallery.appendChild(el));
+        selectedElements.forEach(el => gallery.appendChild(el));
+        
+        // Update server
+        await this.updateServerOrder();
+        
+        this.clearAllSelections();
+        
+        if (window.toast) {
+            window.toast.success('Items moved to bottom!');
+        }
+    }
+    
+    async updateServerOrder() {
+        const gallery = document.getElementById('gallery');
+        const artworks = Array.from(gallery.children);
+        const totalCount = artworks.length;
+        
+        const order = artworks.map((el, idx) => ({
+            id: el.dataset.id,
+            position: totalCount - idx
+        }));
+        
+        try {
+            const response = await fetch('/update-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order })
+            });
+            
+            return response.ok;
+        } catch (error) {
+            console.error('Update order error:', error);
+            return false;
+        }
+    }
+    
+    // ========================================================================
+    // UI VISIBILITY MANAGEMENT
+    // ========================================================================
+    
+    hideFloatingButtons() {
+        this.floatingButtons.forEach(button => {
+            if (button && button !== this.toggleButton) {
+                button.style.display = 'none';
+            }
+        });
+    }
+    
+    showFloatingButtons() {
+        this.floatingButtons.forEach(button => {
+            if (button && button !== this.toggleButton) {
+                button.style.display = '';
+            }
+        });
+    }
+    
+    disableAnimations() {
+        const style = document.createElement('style');
+        style.id = 'edit-mode-performance';
+        style.textContent = `
+            .edit-view-mode .artwork,
+            .edit-select-mode .artwork {
+                transition: none !important;
+                animation: none !important;
+                will-change: auto !important;
+            }
+            .edit-view-mode .artwork:hover,
+            .edit-select-mode .artwork:hover {
+                transform: none !important;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    enableAnimations() {
+        const style = document.getElementById('edit-mode-performance');
+        if (style) {
+            style.remove();
+        }
+    }
+    
+    disableLightboxInteractions() {
+        // Prevent lightbox from opening in select mode
+        document.body.classList.add('disable-lightbox');
+    }
+    
+    // ========================================================================
+    // BATCH UPLOAD (REUSED FROM ORIGINAL)
+    // ========================================================================
+    
+    openBatchUpload() {
+        this.batchUploadModal.style.display = 'block';
+        this.resetBatchUploadModal();
+    }
+    
+    resetBatchUploadModal() {
+        this.batchFiles = [];
+        
+        const previewGrid = this.batchUploadModal.querySelector('#batch-preview-grid');
+        previewGrid.innerHTML = '';
+        
+        const progressContainer = this.batchUploadModal.querySelector('#batch-upload-progress');
+        progressContainer.style.display = 'none';
+        progressContainer.innerHTML = '';
+        
+        const uploadBtn = this.batchUploadModal.querySelector('#start-batch-upload');
+        uploadBtn.style.display = 'none';
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Upload All Images';
+        
+        const fileInput = this.batchUploadModal.querySelector('#batch-file-input');
+        fileInput.value = '';
+        
+        console.log('✅ Batch upload modal reset successfully');
+    }
+    
+    closeBatchUpload() {
+        this.batchUploadModal.style.display = 'none';
+        this.resetBatchUploadModal();
+        console.log('✅ Batch upload modal closed and cleaned up');
+    }
+    
+    setupBatchUpload() {
+        const modal = this.batchUploadModal;
+        const dropZone = modal.querySelector('.batch-drop-zone');
+        const fileInput = modal.querySelector('#batch-file-input');
+        const previewGrid = modal.querySelector('#batch-preview-grid');
+        const uploadBtn = modal.querySelector('#start-batch-upload');
+        
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', (e) => {
+            this.handleBatchFiles(e.target.files);
+        });
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            this.handleBatchFiles(e.dataTransfer.files);
+        });
+        
+        uploadBtn.addEventListener('click', () => this.startBatchUpload());
+        
+        modal.querySelector('.close').addEventListener('click', () => this.closeBatchUpload());
+        modal.querySelector('#cancel-batch-upload').addEventListener('click', () => this.closeBatchUpload());
+    }
+    
+    handleBatchFiles(files) {
+        const validFiles = Array.from(files).filter(file => {
+            if (!file.type.startsWith('image/')) {
+                if (window.toast) {
+                    window.toast.warning(`${file.name} is not an image`);
+                }
+                return false;
+            }
+            if (file.size > 15 * 1024 * 1024) {
+                if (window.toast) {
+                    window.toast.warning(`${file.name} is too large (max 15MB)`);
+                }
+                return false;
+            }
+            return true;
+        });
+        
+        this.batchFiles = [...this.batchFiles, ...validFiles];
+        this.updateBatchPreview();
+        
+        if (this.batchFiles.length > 0) {
+            this.batchUploadModal.querySelector('#start-batch-upload').style.display = 'block';
+        }
+    }
+    
+    updateBatchPreview() {
+        const previewGrid = this.batchUploadModal.querySelector('#batch-preview-grid');
+        previewGrid.innerHTML = '';
+        
+        this.batchFiles.forEach((file, index) => {
+            const preview = document.createElement('div');
+            preview.className = 'batch-preview-item';
+            
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.alt = file.name;
+            img.onload = () => URL.revokeObjectURL(img.src);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.onclick = () => {
+                this.batchFiles.splice(index, 1);
+                this.updateBatchPreview();
+                if (this.batchFiles.length === 0) {
+                    this.batchUploadModal.querySelector('#start-batch-upload').style.display = 'none';
+                }
+            };
+            
+            preview.appendChild(img);
+            preview.appendChild(removeBtn);
+            previewGrid.appendChild(preview);
+        });
+    }
+    
+    async startBatchUpload() {
+        if (this.batchFiles.length === 0) return;
+        
+        const progressContainer = this.batchUploadModal.querySelector('#batch-upload-progress');
+        const uploadBtn = this.batchUploadModal.querySelector('#start-batch-upload');
+        const cancelBtn = this.batchUploadModal.querySelector('#cancel-batch-upload');
+        
+        progressContainer.style.display = 'block';
+        progressContainer.innerHTML = '';
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading...';
+        cancelBtn.disabled = true;
+        
+        let successCount = 0;
+        
+        try {
+            for (let i = 0; i < this.batchFiles.length; i++) {
+                const file = this.batchFiles[i];
+                const progressItem = document.createElement('div');
+                progressItem.className = 'progress-item';
+                progressItem.innerHTML = `
+                    <p>${file.name}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                `;
+                progressContainer.appendChild(progressItem);
+                
+                const progressFill = progressItem.querySelector('.progress-fill');
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('title', '');
+                    formData.append('description', '');
+                    
+                    const response = await fetch('/add', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        successCount++;
+                        progressFill.style.width = '100%';
+                        progressFill.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    } else {
+                        throw new Error('Upload failed');
+                    }
+                } catch (error) {
+                    progressFill.style.width = '100%';
+                    progressFill.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                }
+            }
+            
+            if (window.toast) {
+                window.toast.success(`Uploaded ${successCount} of ${this.batchFiles.length} images!`);
+            }
+            
+            setTimeout(() => {
+                this.closeBatchUpload();
+                this.refreshGalleryInEditMode();
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Batch upload error:', error);
+            if (window.toast) {
+                window.toast.error('Batch upload failed');
+            }
+            
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload All Images';
+            cancelBtn.disabled = false;
+        }
+    }
+    
+    async refreshGalleryInEditMode() {
+        try {
+            const response = await fetch('/api/artworks');
+            const data = await response.json();
+            
+            if (data.success) {
+                const gallery = document.getElementById('gallery');
+                gallery.innerHTML = data.artworks.map(artwork => this.createArtworkHTML(artwork)).join('');
+                
+                // Re-setup based on current mode
+                if (this.currentMode === this.MODES.EDIT_SELECT) {
+                    this.addCheckboxes();
+                }
+                
+                this.updateCounters();
+                
+                if (window.lazyLoader) {
+                    const images = gallery.querySelectorAll('img.lazy');
+                    window.lazyLoader.observe(images);
+                }
+                
+                if (window.artGalleryApp?.updateImageCounter) {
+                    window.artGalleryApp.updateImageCounter();
+                }
+            }
+        } catch (error) {
+            console.error('Error refreshing gallery:', error);
+            sessionStorage.setItem('restoreEditMode', 'true');
+            window.location.reload();
+        }
+    }
+    
+    createArtworkHTML(artwork) {
+        return `
+            <div class="artwork" data-id="${artwork.id}">
+                <div class="artwork-container">
+                    <img data-src="${artwork.thumbnail_path}" 
+                         data-full-src="${artwork.image_path}"
+                         alt="${artwork.title || ''}" 
+                         class="lazy">
+                    <div class="artwork-actions">
+                        <button class="btn-edit" data-id="${artwork.id}" 
+                                data-title="${artwork.title || ''}" 
+                                data-description="${artwork.description || ''}">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-delete" data-id="${artwork.id}" 
+                                data-title="${artwork.title || ''}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="artwork-info">
+                    ${artwork.title ? `<h3 class="artwork-title">${artwork.title}</h3>` : ''}
+                    <div class="artwork-description">
+                        <p class="truncated-description">${artwork.description || ''}</p>
+                        ${artwork.description?.length > 120 ? 
+                          `<button class="btn-see-more" data-id="${artwork.id}">See more</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ========================================================================
+    // PUBLIC API
+    // ========================================================================
+    
+    getCurrentMode() {
+        return this.currentMode;
+    }
+    
+    getSelectedItems() {
+        return Array.from(this.selectedItems);
+    }
+    
+    getStats() {
+        return {
+            currentMode: this.currentMode,
+            selectedCount: this.selectedItems.size,
+            totalItems: document.querySelectorAll('.artwork').length
+        };
+    }
+}
+
+// ============================================================================
+// INITIALIZE WHEN DOM READY
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.editModeManager = new EditModeManager();
+    console.log('✨ Enhanced Edit Mode Manager initialized');
+});
