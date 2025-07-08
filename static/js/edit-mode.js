@@ -261,8 +261,8 @@ class EditModeManager {
     switchToMode(newMode) {
         console.log(`🔄 Switching from ${this.currentMode} to ${newMode}`);
         
-        // Exit current mode
-        this.exitCurrentMode();
+        // Exit current mode (without showing floating buttons)
+        this.exitCurrentMode(newMode); // Pass target mode to exit function
         
         // Enter new mode
         this.currentMode = newMode;
@@ -275,7 +275,8 @@ class EditModeManager {
         this.showModeToast(newMode);
     }
     
-    exitCurrentMode() {
+    // ✅ FIXED: Modified to accept target mode parameter
+    exitCurrentMode(targetMode = null) {
         // Remove all mode classes
         document.body.classList.remove('edit-view-mode', 'edit-select-mode');
         
@@ -284,8 +285,10 @@ class EditModeManager {
         this.editSelectHeader.style.display = 'none';
         this.actionBar.classList.remove('visible');
         
-        // Show floating buttons
-        this.showFloatingButtons();
+        // ✅ FIXED: Only show floating buttons when going to Normal mode
+        if (targetMode === this.MODES.NORMAL) {
+            this.showFloatingButtons();
+        }
         
         // Remove checkboxes
         this.removeCheckboxes();
@@ -317,7 +320,7 @@ class EditModeManager {
     enterNormalMode() {
         console.log('🎨 Entering Normal Gallery Mode');
         
-        // Show edit button again
+        // Show edit button and floating buttons (already handled in exitCurrentMode)
         this.showEditButton();
         
         // Default state - no special setup needed
@@ -332,7 +335,7 @@ class EditModeManager {
         // Show edit view header
         this.editViewHeader.style.display = 'block';
         
-        // Hide floating buttons and edit button
+        // ✅ IMPROVED: Always hide floating buttons in any edit mode
         this.hideFloatingButtons();
         this.hideEditButton();
         
@@ -359,7 +362,8 @@ class EditModeManager {
         // Hide edit view header
         this.editViewHeader.style.display = 'none';
         
-        // Hide edit button completely (use Cancel Select instead)
+        // ✅ IMPROVED: Ensure floating buttons are hidden
+        this.hideFloatingButtons();
         this.hideEditButton();
         
         // Add checkboxes
@@ -370,6 +374,45 @@ class EditModeManager {
         
         // Disable lightbox interactions
         this.disableLightboxInteractions();
+    }
+    
+    // ✅ IMPROVED: Enhanced floating buttons management
+    hideFloatingButtons() {
+        this.floatingButtons.forEach(button => {
+            if (button && button !== this.toggleButton) {
+                // Store original display state if not already stored
+                if (!button.dataset.originalDisplay) {
+                    button.dataset.originalDisplay = button.style.display || '';
+                }
+                button.style.display = 'none';
+            }
+        });
+        console.log('🙈 Floating buttons hidden');
+    }
+    
+    showFloatingButtons() {
+        this.floatingButtons.forEach(button => {
+            if (button && button !== this.toggleButton) {
+                // Restore original display state
+                button.style.display = button.dataset.originalDisplay || '';
+                // Clean up the stored state
+                delete button.dataset.originalDisplay;
+            }
+        });
+        console.log('👀 Floating buttons shown');
+    }
+    
+    // ✅ IMPROVED: More explicit edit button management
+    hideEditButton() {
+        if (this.toggleButton) {
+            this.toggleButton.style.display = 'none';
+        }
+    }
+    
+    showEditButton() {
+        if (this.toggleButton) {
+            this.toggleButton.style.display = '';
+        }
     }
     
     updateToggleButton() {
