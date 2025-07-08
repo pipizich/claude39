@@ -1,14 +1,14 @@
-/* =================================
-   EDIT MODE STYLES (CLEANED - PC ONLY)
+/* =================================================================
+   🎨 EDIT MODE STYLES (CLEANED - PC ONLY) - FIXED VERSION
    Removed all animations - moved to animations.css
    Removed mobile styles - PC only
-   ================================= */
+   ================================================================= */
 
-/* =================================
-   EDIT MODE TOGGLE BUTTON
-   ================================= */
+/* =================================================================
+   EDIT MODE BUTTON (SIMPLIFIED)
+   ================================================================= */
 
-.edit-mode-toggle {
+.edit-mode-button {
     position: fixed;
     top: 70px;
     left: 20px;
@@ -28,14 +28,9 @@
     transition: all 0.3s ease;
 }
 
-.edit-mode-toggle:hover {
+.edit-mode-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
-}
-
-.edit-mode-toggle.active {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
 /* Dark mode toggle button */
@@ -64,16 +59,16 @@
     box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
 }
 
-/* Dark mode styles for edit toggle */
-[data-theme="dark"] .edit-mode-toggle {
+/* Dark mode styles for edit button */
+[data-theme="dark"] .edit-mode-button {
     background: linear-gradient(135deg, #50fa7b 0%, #5af78e 100%);
     color: #0a0a0a;
     box-shadow: 0 4px 15px rgba(80, 250, 123, 0.4);
 }
 
-[data-theme="dark"] .edit-mode-toggle.active {
-    background: linear-gradient(135deg, #ff5555 0%, #ff6b6b 100%);
-    color: white;
+[data-theme="dark"] .edit-mode-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(80, 250, 123, 0.5);
 }
 
 [data-theme="dark"] .dark-mode-toggle {
@@ -81,9 +76,9 @@
     color: #0a0a0a;
 }
 
-/* =================================
+/* =================================================================
    EDIT MODE CONTROLS BAR
-   ================================= */
+   ================================================================= */
 
 .edit-mode-controls {
     position: fixed;
@@ -100,32 +95,77 @@
     gap: 20px;
 }
 
-.edit-mode .edit-mode-controls {
+.edit-view-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px 20px;
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.edit-view-header.active,
+.edit-select-header.active {
     display: flex;
 }
 
-[data-theme="dark"] .edit-mode-controls {
+.edit-select-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px 20px;
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+[data-theme="dark"] .edit-view-header,
+[data-theme="dark"] .edit-select-header {
     background: rgba(10, 10, 10, 0.98);
     box-shadow: 0 2px 20px rgba(255, 107, 53, 0.2);
     border-bottom: 2px solid #ff6b35;
 }
 
-.edit-controls-center {
+.edit-view-controls,
+.edit-select-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+.edit-controls-left,
+.edit-controls-center,
+.edit-controls-right {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+.edit-controls-center {
     justify-content: center;
 }
 
 .edit-controls-right {
-    position: absolute;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    justify-content: flex-end;
 }
 
 /* Control buttons */
+.btn-back-gallery,
+.btn-enter-select,
+.btn-cancel-select,
 .btn-select-all {
     background: #3b82f6;
     color: white;
@@ -141,9 +181,20 @@
     gap: 8px;
 }
 
+.btn-back-gallery:hover,
+.btn-enter-select:hover,
+.btn-cancel-select:hover,
 .btn-select-all:hover {
     background: #2563eb;
     transform: translateY(-1px);
+}
+
+.btn-cancel-select {
+    background: #ef4444;
+}
+
+.btn-cancel-select:hover {
+    background: #dc2626;
 }
 
 .btn-batch-upload {
@@ -166,6 +217,7 @@
     transform: translateY(-1px);
 }
 
+.total-counter,
 .selection-counter {
     font-family: 'InterVariable','Inter', sans-serif;
     font-weight: 600;
@@ -174,17 +226,21 @@
     background: rgba(59, 130, 246, 0.1);
     border-radius: 6px;
     border: 1px solid rgba(59, 130, 246, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
+[data-theme="dark"] .total-counter,
 [data-theme="dark"] .selection-counter {
     color: #8be9fd;
     background: rgba(139, 233, 253, 0.1);
     border-color: rgba(139, 233, 253, 0.2);
 }
 
-/* =================================
+/* =================================================================
    EDIT MODE ACTION BAR
-   ================================= */
+   ================================================================= */
 
 .edit-action-bar {
     position: fixed;
@@ -255,35 +311,41 @@
     transform: translateY(-1px);
 }
 
-/* =================================
+/* =================================================================
    EDIT MODE GALLERY STYLES
-   ================================= */
+   ================================================================= */
 
 /* Disable animations in edit mode */
-.edit-mode .artwork {
+.edit-view-mode .artwork,
+.edit-select-mode .artwork {
     transition: none !important;
 }
 
-.edit-mode .artwork:hover {
+.edit-view-mode .artwork:hover,
+.edit-select-mode .artwork:hover {
     transform: none !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
 }
 
-.edit-mode .artwork-container img {
+.edit-view-mode .artwork-container img,
+.edit-select-mode .artwork-container img {
     transition: none !important;
     transform: none !important;
 }
 
 /* Thumbnail size in edit mode - Desktop optimized */
-.edit-mode .artwork {
+.edit-view-mode .artwork,
+.edit-select-mode .artwork {
     width: 150px;
 }
 
-.edit-mode .artwork-container {
+.edit-view-mode .artwork-container,
+.edit-select-mode .artwork-container {
     height: 150px;
 }
 
-.edit-mode .artwork-container img {
+.edit-view-mode .artwork-container img,
+.edit-select-mode .artwork-container img {
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -302,7 +364,7 @@
     transition: opacity 0.2s ease;
 }
 
-.edit-mode .artwork-checkbox {
+.edit-select-mode .artwork-checkbox {
     opacity: 1;
     visibility: visible;
 }
@@ -328,18 +390,20 @@
 }
 
 /* Hide artwork info in edit mode */
-.edit-mode .artwork-info {
+.edit-view-mode .artwork-info,
+.edit-select-mode .artwork-info {
     display: none;
 }
 
 /* Hide individual action buttons in edit mode */
-.edit-mode .artwork-actions {
+.edit-view-mode .artwork-actions,
+.edit-select-mode .artwork-actions {
     display: none !important;
 }
 
-/* =================================
+/* =================================================================
    BATCH UPLOAD MODAL
-   ================================= */
+   ================================================================= */
 
 .batch-upload-modal {
     display: none;
@@ -442,11 +506,11 @@
     transition: width 0.3s ease;
 }
 
-/* =================================
+/* =================================================================
    ACCESSIBILITY
-   ================================= */
+   ================================================================= */
 
-.edit-mode-toggle:focus,
+.edit-mode-button:focus,
 .dark-mode-toggle:focus,
 .btn-select-all:focus,
 .btn-batch-upload:focus,
@@ -460,22 +524,25 @@
     outline-offset: 2px;
 }
 
-/* =================================
+/* =================================================================
    PERFORMANCE OPTIMIZATIONS
-   ================================= */
+   ================================================================= */
 
 /* Disable will-change in edit mode */
-.edit-mode .artwork {
+.edit-view-mode .artwork,
+.edit-select-mode .artwork {
     will-change: auto !important;
 }
 
 /* Contain layout changes */
-.edit-mode .gallery {
+.edit-view-mode .gallery,
+.edit-select-mode .gallery {
     contain: layout style;
 }
 
 /* Force hardware acceleration off for better performance */
-.edit-mode .artwork-container img {
+.edit-view-mode .artwork-container img,
+.edit-select-mode .artwork-container img {
     transform: translateZ(0) !important;
     backface-visibility: visible !important;
 }
