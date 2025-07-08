@@ -22,7 +22,7 @@ class EditModeManager {
         
         this.currentMode = this.MODES.NORMAL;
         this.selectedItems = new Set();
-        
+        this.wasInSelectMode = false;
         // UI Elements
         this.toggleButton = null;
         this.editViewHeader = null;
@@ -419,65 +419,78 @@ class EditModeManager {
         this.toggleButton.title = 'Enter Edit Mode';
     }
     
-    showModeToast(mode) {
-        if (!window.toast) return;
-        
-        switch (mode) {
-            case this.MODES.NORMAL:
-                window.toast.success('Returned to normal gallery view');
-                break;
-            case this.MODES.EDIT_VIEW:
-                window.toast.info('Edit Mode: Click thumbnails to open lightbox, or use "Select" for batch operations');
-                break;
-            case this.MODES.EDIT_SELECT:
-                window.toast.info('Select Mode: Click thumbnails to select/deselect. Lightbox disabled. Use "Cancel" to return.');
-                break;
-        }
-    }
+	showModeToast(mode) {
+		if (!window.toast) return;
+		
+		switch (mode) {
+			case this.MODES.NORMAL:
+				window.toast.success('Returned to normal gallery view');
+				break;
+			case this.MODES.EDIT_VIEW:
+				// ✅ ENHANCED: Better messaging for returns vs initial entry
+				if (this.wasInSelectMode) {
+					window.toast.success('Returned to edit view mode');
+					this.wasInSelectMode = false; // Reset flag
+				} else {
+					window.toast.info('Edit Mode: Click thumbnails to open lightbox, or use "Select" for batch operations');
+				}
+				break;
+			case this.MODES.EDIT_SELECT:
+				window.toast.info('Select Mode: Click thumbnails to select/deselect. Lightbox disabled. Use "Cancel" to return.');
+				this.wasInSelectMode = true; // Set flag
+				break;
+		}
+	}
     
     // ========================================================================
     // INTERACTION HANDLING - FIXED
     // ========================================================================
     
-    handleGalleryClick(e) {
-        const artwork = e.target.closest('.artwork');
-        if (!artwork) return;
-        
-        const isCheckboxClick = e.target.classList.contains('artwork-checkbox');
-        
-        switch (this.currentMode) {
-            case this.MODES.NORMAL:
-                // Normal behavior - handled by other scripts
-                break;
-                
-            case this.MODES.EDIT_VIEW:
-                // Allow lightbox to open - handled by lightbox script
-                break;
-                
-            case this.MODES.EDIT_SELECT:
-                // ✅ FIXED: Aggressively prevent lightbox and handle selection only
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation(); // Also stop immediate propagation
-                
-                console.log('🚫 Click intercepted in select mode, toggling selection');
-                
-                if (!isCheckboxClick) {
-                    // Click anywhere on artwork toggles checkbox
-                    const checkbox = artwork.querySelector('.artwork-checkbox');
-                    if (checkbox) {
-                        checkbox.checked = !checkbox.checked;
-                        this.handleSelectionChange(artwork, checkbox.checked);
-                    }
-                } else {
-                    // Direct checkbox click
-                    const checkbox = e.target;
-                    this.handleSelectionChange(artwork, checkbox.checked);
-                }
-                
-                return false; // Prevent any further propagation
-        }
-    }
+	handleGalleryClick(e) {
+		const artwork = e.target.closest('.artwork');
+		if (!artwork) return;
+		
+		const isCheckboxClick = e.target.classList.contains('artwork-checkbox');
+		
+		switch (this.currentMode) {
+			case this.MODES.NORMAL:
+				break;
+				
+			case this.MODES.EDIT_VIEW:
+				break;
+				
+			case this.MODES.EDIT_SELECT:
+				// ✅ FIXED: Different handling for checkbox vs artwork clicks
+				if (isCheckboxClick) {
+					// Direct checkbox click - let browser handle naturally
+					e.stopPropagation(); 
+					e.stopImmediatePropagation();
+					
+					// Wait for browser to toggle checkbox first
+					setTimeout(() => {
+						const checkbox = e.target;
+						this.handleSelectionChange(artwork, checkbox.checked);
+					}, 0);
+					
+					console.log('☑️ Direct checkbox click handled');
+				} else {
+					// Click artwork area - toggle manually
+					e.preventDefault();
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+					
+					const checkbox = artwork.querySelector('.artwork-checkbox');
+					if (checkbox) {
+						checkbox.checked = !checkbox.checked;
+						this.handleSelectionChange(artwork, checkbox.checked);
+					}
+					
+					console.log('🖱️ Artwork area click - toggled manually');
+				}
+				
+				return false;
+		}
+	}
     
     handleKeyboard(e) {
         // Only handle shortcuts in edit modes
@@ -525,11 +538,9 @@ class EditModeManager {
                 container.appendChild(checkbox);
                 
                 // ✅ FIXED: Enhanced checkbox event handling to prevent lightbox
-                checkbox.addEventListener('change', (e) => {
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    this.handleSelectionChange(artwork, e.target.checked);
-                });
+				checkbox.addEventListener('change', (e) => {
+					console.log('📝 Checkbox change event fired');
+				});
                 
                 checkbox.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -665,122 +676,163 @@ class EditModeManager {
     // BATCH OPERATIONS
     // ========================================================================
     
-    async deleteSelected() {
-        if (this.selectedItems.size === 0) return;
-        
-        const count = this.selectedItems.size;
-        const confirmed = confirm(`Are you sure you want to delete ${count} selected items?`);
-        
-        if (!confirmed) return;
-        
-        if (window.toast) {
-            window.toast.info(`Deleting ${count} items...`);
-        }
-        
-        try {
-            const deletePromises = Array.from(this.selectedItems).map(async (id) => {
-                const response = await fetch(`/delete/${id}`, {
-                    method: 'POST'
-                });
-                
-                if (response.ok) {
-                    const artwork = document.querySelector(`[data-id="${id}"]`);
-                    if (artwork) {
-                        artwork.remove();
-                    }
-                }
-                
-                return response;
-            });
-            
-            await Promise.all(deletePromises);
-            
-            this.clearAllSelections();
-            this.updateCounters();
-            
-            if (window.toast) {
-                window.toast.success(`Successfully deleted ${count} items!`);
-            }
-            
-            if (window.artGalleryApp?.updateImageCounter) {
-                window.artGalleryApp.updateImageCounter();
-            }
-            
-        } catch (error) {
-            console.error('Delete error:', error);
-            if (window.toast) {
-                window.toast.error('Failed to delete some items');
-            }
-        }
-    }
+	async deleteSelected() {
+		if (this.selectedItems.size === 0) return;
+		
+		const count = this.selectedItems.size;
+		const confirmed = confirm(`Are you sure you want to delete ${count} selected items?`);
+		
+		if (!confirmed) return;
+		
+		if (window.toast) {
+			window.toast.info(`Deleting ${count} items...`);
+		}
+		
+		try {
+			const deletePromises = Array.from(this.selectedItems).map(async (id) => {
+				const response = await fetch(`/delete/${id}`, {
+					method: 'POST'
+				});
+				
+				if (response.ok) {
+					const artwork = document.querySelector(`[data-id="${id}"]`);
+					if (artwork) {
+						artwork.remove();
+					}
+				}
+				
+				return response;
+			});
+			
+			await Promise.all(deletePromises);
+			
+			this.clearAllSelections();
+			this.updateCounters();
+			
+			if (window.toast) {
+				window.toast.success(`Successfully deleted ${count} items!`);
+			}
+			
+			if (window.artGalleryApp?.updateImageCounter) {
+				window.artGalleryApp.updateImageCounter();
+			}
+			
+			// ✅ CODE MỚI ĐƯỢC THÊM VÀO ĐÂY:
+			// Auto return to edit-view mode after successful delete
+			setTimeout(() => {
+				this.switchToMode(this.MODES.EDIT_VIEW);
+				if (window.toast) {
+					window.toast.info(`Returned to edit view. Deleted ${count} items.`);
+				}
+			}, 1000); // Give time for success message to show
+			
+		} catch (error) {
+			console.error('Delete error:', error);
+			if (window.toast) {
+				window.toast.error('Failed to delete some items');
+			}
+		}
+	}
     
-    async moveSelectedToTop() {
-        if (this.selectedItems.size === 0) return;
-        
-        if (window.toast) {
-            window.toast.info(`Moving ${this.selectedItems.size} items to top...`);
-        }
-        
-        const gallery = document.getElementById('gallery');
-        const selectedElements = [];
-        const otherElements = [];
-        
-        Array.from(gallery.children).forEach(artwork => {
-            if (this.selectedItems.has(artwork.dataset.id)) {
-                selectedElements.push(artwork);
-            } else {
-                otherElements.push(artwork);
-            }
-        });
-        
-        // Reorder DOM
-        gallery.innerHTML = '';
-        selectedElements.forEach(el => gallery.appendChild(el));
-        otherElements.forEach(el => gallery.appendChild(el));
-        
-        // Update server
-        await this.updateServerOrder();
-        
-        this.clearAllSelections();
-        
-        if (window.toast) {
-            window.toast.success('Items moved to top!');
-        }
-    }
+	async moveSelectedToTop() {
+		if (this.selectedItems.size === 0) return;
+		
+		const count = this.selectedItems.size;
+		
+		if (window.toast) {
+			window.toast.info(`Moving ${count} items to top...`);
+		}
+		
+		const gallery = document.getElementById('gallery');
+		const selectedElements = [];
+		const otherElements = [];
+		
+		Array.from(gallery.children).forEach(artwork => {
+			if (this.selectedItems.has(artwork.dataset.id)) {
+				selectedElements.push(artwork);
+			} else {
+				otherElements.push(artwork);
+			}
+		});
+		
+		// Reorder DOM
+		gallery.innerHTML = '';
+		selectedElements.forEach(el => gallery.appendChild(el));
+		otherElements.forEach(el => gallery.appendChild(el));
+		
+		// Update server
+		const updateSuccess = await this.updateServerOrder();
+		
+		this.clearAllSelections();
+		
+		if (updateSuccess) {
+			if (window.toast) {
+				window.toast.success(`${count} items moved to top!`);
+			}
+			
+			// Auto return to edit-view mode after successful move
+			setTimeout(() => {
+				this.switchToMode(this.MODES.EDIT_VIEW);
+				if (window.toast) {
+					window.toast.info(`Returned to edit view. ${count} items moved to top.`);
+				}
+			}, 1000);
+		} else {
+			if (window.toast) {
+				window.toast.error('Failed to update order on server');
+			}
+		}
+	}
     
-    async moveSelectedToBottom() {
-        if (this.selectedItems.size === 0) return;
-        
-        if (window.toast) {
-            window.toast.info(`Moving ${this.selectedItems.size} items to bottom...`);
-        }
-        
-        const gallery = document.getElementById('gallery');
-        const selectedElements = [];
-        const otherElements = [];
-        
-        Array.from(gallery.children).forEach(artwork => {
-            if (this.selectedItems.has(artwork.dataset.id)) {
-                selectedElements.push(artwork);
-            } else {
-                otherElements.push(artwork);
-            }
-        });
-        
-        // Reorder DOM
-        gallery.innerHTML = '';
-        otherElements.forEach(el => gallery.appendChild(el));
-        selectedElements.forEach(el => gallery.appendChild(el));
-        
-        // Update server
-        await this.updateServerOrder();
-        
-        this.clearAllSelections();
-        
-        if (window.toast) {
-            window.toast.success('Items moved to bottom!');
-        }
-    }
+	async moveSelectedToBottom() {
+		if (this.selectedItems.size === 0) return;
+		
+		const count = this.selectedItems.size;
+		
+		if (window.toast) {
+			window.toast.info(`Moving ${count} items to bottom...`);
+		}
+		
+		const gallery = document.getElementById('gallery');
+		const selectedElements = [];
+		const otherElements = [];
+		
+		Array.from(gallery.children).forEach(artwork => {
+			if (this.selectedItems.has(artwork.dataset.id)) {
+				selectedElements.push(artwork);
+			} else {
+				otherElements.push(artwork);
+			}
+		});
+		
+		// Reorder DOM
+		gallery.innerHTML = '';
+		otherElements.forEach(el => gallery.appendChild(el));
+		selectedElements.forEach(el => gallery.appendChild(el));
+		
+		// Update server
+		const updateSuccess = await this.updateServerOrder();
+		
+		this.clearAllSelections();
+		
+		if (updateSuccess) {
+			if (window.toast) {
+				window.toast.success(`${count} items moved to bottom!`);
+			}
+			
+			// Auto return to edit-view mode after successful move
+			setTimeout(() => {
+				this.switchToMode(this.MODES.EDIT_VIEW);
+				if (window.toast) {
+					window.toast.info(`Returned to edit view. ${count} items moved to bottom.`);
+				}
+			}, 1000);
+		} else {
+			if (window.toast) {
+				window.toast.error('Failed to update order on server');
+			}
+		}
+	}
     
     async updateServerOrder() {
         const gallery = document.getElementById('gallery');
