@@ -1,16 +1,13 @@
 // ============================================================================
-// ENHANCED EDIT MODE MANAGER - 3 STATES SYSTEM (SIMPLIFIED UX)
+// ENHANCED EDIT MODE MANAGER - FIXED LIGHTBOX DISABLE
 // ============================================================================
 //
 // States:
 // 1. NORMAL - Gallery bình thường với large cards, có Edit Mode button
 // 2. EDIT_VIEW - Thumbnails nhỏ, có lightbox, có Back to Gallery button  
-// 3. EDIT_SELECT - Có checkbox, không lightbox, có Cancel Select button
+// 3. EDIT_SELECT - Có checkbox, KHÔNG LIGHTBOX, có Cancel Select button
 //
-// Clean UX Flow:
-// Normal ──[Edit Mode]──→ Edit View ──[Select]──→ Edit Select
-//   ↑                        ↑                     │
-//   └────[Back to Gallery]───┘       [Cancel]─────┘
+// ✅ FIXED: Lightbox hoàn toàn disable trong select mode
 //
 // ============================================================================
 
@@ -70,13 +67,13 @@ class EditModeManager {
     
     createEditModeToggle() {
         const toggle = document.createElement('button');
-        toggle.className = 'edit-mode-button'; // Changed from toggle to button
+        toggle.className = 'edit-mode-button';
         toggle.innerHTML = '<i class="fa-light fa-pen-to-square"></i>';
         toggle.title = 'Enter Edit Mode';
         toggle.setAttribute('aria-label', 'Enter Edit Mode');
         
         document.body.appendChild(toggle);
-        this.toggleButton = toggle; // Note: still called toggleButton for code compatibility
+        this.toggleButton = toggle;
     }
     
     createEditViewHeader() {
@@ -237,8 +234,8 @@ class EditModeManager {
             this.moveSelectedToBottom();
         });
         
-        // Gallery click handling with mode-specific behavior
-        document.addEventListener('click', (e) => this.handleGalleryClick(e));
+        // ✅ FIXED: Enhanced gallery click handling with proper event stopping
+        document.addEventListener('click', (e) => this.handleGalleryClick(e), true); // Use capture phase
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
@@ -275,17 +272,16 @@ class EditModeManager {
         this.showModeToast(newMode);
     }
     
-    // ✅ FIXED: Modified to accept target mode parameter
     exitCurrentMode(targetMode = null) {
         // Remove all mode classes
-        document.body.classList.remove('edit-view-mode', 'edit-select-mode');
+        document.body.classList.remove('edit-view-mode', 'edit-select-mode', 'disable-lightbox');
         
         // Hide all headers and action bar
         this.editViewHeader.style.display = 'none';
         this.editSelectHeader.style.display = 'none';
         this.actionBar.classList.remove('visible');
         
-        // ✅ FIXED: Only show floating buttons when going to Normal mode
+        // Only show floating buttons when going to Normal mode
         if (targetMode === this.MODES.NORMAL) {
             this.showFloatingButtons();
         }
@@ -335,7 +331,7 @@ class EditModeManager {
         // Show edit view header
         this.editViewHeader.style.display = 'block';
         
-        // ✅ IMPROVED: Always hide floating buttons in any edit mode
+        // Always hide floating buttons in any edit mode
         this.hideFloatingButtons();
         this.hideEditButton();
         
@@ -353,8 +349,8 @@ class EditModeManager {
     enterEditSelectMode() {
         console.log('☑️ Entering Edit Select Mode');
         
-        // Add mode classes
-        document.body.classList.add('edit-view-mode', 'edit-select-mode');
+        // ✅ FIXED: Add multiple classes to disable lightbox
+        document.body.classList.add('edit-view-mode', 'edit-select-mode', 'disable-lightbox');
         
         // Show edit select header
         this.editSelectHeader.style.display = 'block';
@@ -362,7 +358,7 @@ class EditModeManager {
         // Hide edit view header
         this.editViewHeader.style.display = 'none';
         
-        // ✅ IMPROVED: Ensure floating buttons are hidden
+        // Ensure floating buttons are hidden
         this.hideFloatingButtons();
         this.hideEditButton();
         
@@ -372,11 +368,12 @@ class EditModeManager {
         // Update counters
         this.updateCounters();
         
-        // Disable lightbox interactions
+        // ✅ ENHANCED: Disable lightbox interactions completely
         this.disableLightboxInteractions();
+        
+        console.log('🚫 Lightbox interactions disabled in select mode');
     }
     
-    // ✅ IMPROVED: Enhanced floating buttons management
     hideFloatingButtons() {
         this.floatingButtons.forEach(button => {
             if (button && button !== this.toggleButton) {
@@ -402,7 +399,6 @@ class EditModeManager {
         console.log('👀 Floating buttons shown');
     }
     
-    // ✅ IMPROVED: More explicit edit button management
     hideEditButton() {
         if (this.toggleButton) {
             this.toggleButton.style.display = 'none';
@@ -434,13 +430,13 @@ class EditModeManager {
                 window.toast.info('Edit Mode: Click thumbnails to open lightbox, or use "Select" for batch operations');
                 break;
             case this.MODES.EDIT_SELECT:
-                window.toast.info('Select Mode: Click thumbnails to select/deselect items. Use "Cancel" to return.');
+                window.toast.info('Select Mode: Click thumbnails to select/deselect. Lightbox disabled. Use "Cancel" to return.');
                 break;
         }
     }
     
     // ========================================================================
-    // INTERACTION HANDLING
+    // INTERACTION HANDLING - FIXED
     // ========================================================================
     
     handleGalleryClick(e) {
@@ -459,19 +455,27 @@ class EditModeManager {
                 break;
                 
             case this.MODES.EDIT_SELECT:
-                // Only handle selection, prevent lightbox
+                // ✅ FIXED: Aggressively prevent lightbox and handle selection only
                 e.preventDefault();
                 e.stopPropagation();
+                e.stopImmediatePropagation(); // Also stop immediate propagation
+                
+                console.log('🚫 Click intercepted in select mode, toggling selection');
                 
                 if (!isCheckboxClick) {
-                    // Click on artwork toggles checkbox
+                    // Click anywhere on artwork toggles checkbox
                     const checkbox = artwork.querySelector('.artwork-checkbox');
                     if (checkbox) {
                         checkbox.checked = !checkbox.checked;
                         this.handleSelectionChange(artwork, checkbox.checked);
                     }
+                } else {
+                    // Direct checkbox click
+                    const checkbox = e.target;
+                    this.handleSelectionChange(artwork, checkbox.checked);
                 }
-                break;
+                
+                return false; // Prevent any further propagation
         }
     }
     
@@ -520,10 +524,16 @@ class EditModeManager {
                 const container = artwork.querySelector('.artwork-container');
                 container.appendChild(checkbox);
                 
-                // Checkbox change event
+                // ✅ FIXED: Enhanced checkbox event handling to prevent lightbox
                 checkbox.addEventListener('change', (e) => {
                     e.stopPropagation();
+                    e.stopImmediatePropagation();
                     this.handleSelectionChange(artwork, e.target.checked);
+                });
+                
+                checkbox.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
                 });
             }
         });
@@ -541,9 +551,11 @@ class EditModeManager {
         if (isSelected) {
             this.selectedItems.add(id);
             artwork.classList.add('selected');
+            console.log(`✅ Selected artwork: ${id}`);
         } else {
             this.selectedItems.delete(id);
             artwork.classList.remove('selected');
+            console.log(`❌ Deselected artwork: ${id}`);
         }
         
         this.updateCounters();
@@ -609,6 +621,44 @@ class EditModeManager {
         } else {
             this.actionBar.classList.remove('visible');
         }
+    }
+    
+    // ========================================================================
+    // LIGHTBOX INTERACTION CONTROLS - ENHANCED
+    // ========================================================================
+    
+    disableLightboxInteractions() {
+        console.log('🚫 Disabling lightbox interactions...');
+        
+        // Add multiple classes to ensure lightbox is disabled
+        document.body.classList.add('disable-lightbox');
+        
+        // Also set a data attribute for extra safety
+        document.body.setAttribute('data-lightbox-disabled', 'true');
+        
+        // Disable pointer events on images in select mode
+        const artworkImages = document.querySelectorAll('.edit-select-mode .artwork img');
+        artworkImages.forEach(img => {
+            img.style.pointerEvents = 'none';
+        });
+        
+        console.log('✅ Lightbox interactions disabled');
+    }
+    
+    enableLightboxInteractions() {
+        console.log('✅ Re-enabling lightbox interactions...');
+        
+        // Remove disable classes
+        document.body.classList.remove('disable-lightbox');
+        document.body.removeAttribute('data-lightbox-disabled');
+        
+        // Re-enable pointer events on images
+        const artworkImages = document.querySelectorAll('.artwork img');
+        artworkImages.forEach(img => {
+            img.style.pointerEvents = '';
+        });
+        
+        console.log('✅ Lightbox interactions re-enabled');
     }
     
     // ========================================================================
@@ -760,34 +810,6 @@ class EditModeManager {
     // UI VISIBILITY MANAGEMENT
     // ========================================================================
     
-    hideFloatingButtons() {
-        this.floatingButtons.forEach(button => {
-            if (button && button !== this.toggleButton) {
-                button.style.display = 'none';
-            }
-        });
-    }
-    
-    showFloatingButtons() {
-        this.floatingButtons.forEach(button => {
-            if (button && button !== this.toggleButton) {
-                button.style.display = '';
-            }
-        });
-    }
-    
-    hideEditButton() {
-        if (this.toggleButton) {
-            this.toggleButton.style.display = 'none';
-        }
-    }
-    
-    showEditButton() {
-        if (this.toggleButton) {
-            this.toggleButton.style.display = '';
-        }
-    }
-    
     disableAnimations() {
         const style = document.createElement('style');
         style.id = 'edit-mode-performance';
@@ -812,11 +834,6 @@ class EditModeManager {
         if (style) {
             style.remove();
         }
-    }
-    
-    disableLightboxInteractions() {
-        // Prevent lightbox from opening in select mode
-        document.body.classList.add('disable-lightbox');
     }
     
     // ========================================================================
@@ -1110,5 +1127,5 @@ class EditModeManager {
 
 document.addEventListener('DOMContentLoaded', () => {
     window.editModeManager = new EditModeManager();
-    console.log('✨ Enhanced Edit Mode Manager initialized');
+    console.log('✨ Enhanced Edit Mode Manager with Lightbox Disable initialized');
 });
