@@ -1,7 +1,6 @@
 /* =================================================================
-   🎨 EDIT MODE STYLES (CLEANED - PC ONLY) - FIXED VERSION
-   Removed all animations - moved to animations.css
-   Removed mobile styles - PC only
+   🎨 EDIT MODE STYLES - ENHANCED SELECT MODE UX
+   Fixed lightbox disable and improved visual feedback
    ================================================================= */
 
 /* =================================================================
@@ -312,10 +311,10 @@
 }
 
 /* =================================================================
-   EDIT MODE GALLERY STYLES
+   EDIT MODE GALLERY STYLES - ENHANCED
    ================================================================= */
 
-/* Disable animations in edit mode */
+/* ✅ ENHANCED: Disable animations and interactions in edit mode */
 .edit-view-mode .artwork,
 .edit-select-mode .artwork {
     transition: none !important;
@@ -331,6 +330,33 @@
 .edit-select-mode .artwork-container img {
     transition: none !important;
     transform: none !important;
+}
+
+/* ✅ ENHANCED: Special styling for select mode */
+.edit-select-mode .artwork {
+    cursor: pointer !important;
+    user-select: none;
+}
+
+.edit-select-mode .artwork:hover {
+    background: rgba(59, 130, 246, 0.05) !important;
+    border-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+.edit-select-mode .artwork.selected:hover {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* ✅ ENHANCED: Disable image pointer events in select mode */
+.edit-select-mode .artwork img {
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
+.edit-select-mode .artwork-container {
+    position: relative;
+    cursor: pointer !important;
 }
 
 /* Thumbnail size in edit mode - Desktop optimized */
@@ -351,7 +377,7 @@
     object-fit: cover;
 }
 
-/* Checkbox styles */
+/* ✅ ENHANCED: Checkbox styles with better visibility */
 .artwork-checkbox {
     position: absolute;
     top: 10px;
@@ -361,7 +387,50 @@
     cursor: pointer;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease;
+    transition: all 0.2s ease;
+    z-index: 10;
+    
+    /* ✅ ENHANCED: Better styling */
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #3b82f6;
+    border-radius: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.artwork-checkbox::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 12px;
+    height: 12px;
+    background: #3b82f6;
+    border-radius: 2px;
+    transition: transform 0.2s ease;
+}
+
+.artwork-checkbox:checked::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.artwork-checkbox:checked {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.artwork-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .edit-select-mode .artwork-checkbox {
@@ -369,11 +438,18 @@
     visibility: visible;
 }
 
-.artwork-checkbox:checked {
-    accent-color: #3b82f6;
+.edit-select-mode .artwork:hover .artwork-checkbox {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
-/* Selected artwork overlay */
+/* ✅ ENHANCED: Selected artwork overlay with better animation */
+.artwork.selected {
+    position: relative;
+    border-color: #10b981 !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
 .artwork.selected::after {
     content: '';
     position: absolute;
@@ -381,12 +457,32 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(59, 130, 246, 0.2);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
     pointer-events: none;
+    border-radius: inherit;
+    animation: selectionPulse 2s ease-in-out infinite;
 }
 
 [data-theme="dark"] .artwork.selected::after {
-    background: rgba(80, 250, 123, 0.3);
+    background: linear-gradient(135deg, rgba(80, 250, 123, 0.2) 0%, rgba(139, 233, 253, 0.1) 100%);
+}
+
+/* ✅ NEW: Selection pulse animation */
+@keyframes selectionPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.005);
+    }
+}
+
+/* ✅ ENHANCED: Visual feedback for select mode */
+.edit-select-mode .artwork:active {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease !important;
 }
 
 /* Hide artwork info in edit mode */
@@ -399,6 +495,38 @@
 .edit-view-mode .artwork-actions,
 .edit-select-mode .artwork-actions {
     display: none !important;
+}
+
+/* ✅ ENHANCED: Select mode indicator */
+.edit-select-mode::before {
+    content: '✓ Select Mode - Click images to select/deselect';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(59, 130, 246, 0.95);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    animation: selectModeHint 3s ease-in-out;
+    font-family: 'InterVariable','Inter', sans-serif;
+}
+
+@keyframes selectModeHint {
+    0% { opacity: 0; transform: translate(-50%, -50%) translateY(20px); }
+    15% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+    85% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+    100% { opacity: 0; transform: translate(-50%, -50%) translateY(-20px); }
+}
+
+[data-theme="dark"] .edit-select-mode::before {
+    background: rgba(80, 250, 123, 0.95);
+    color: #0a0a0a;
 }
 
 /* =================================================================
@@ -507,7 +635,7 @@
 }
 
 /* =================================================================
-   ACCESSIBILITY
+   ACCESSIBILITY & PERFORMANCE
    ================================================================= */
 
 .edit-mode-button:focus,
@@ -524,25 +652,40 @@
     outline-offset: 2px;
 }
 
-/* =================================================================
-   PERFORMANCE OPTIMIZATIONS
-   ================================================================= */
+/* ✅ ENHANCED: Better keyboard navigation in select mode */
+.edit-select-mode .artwork:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    background: rgba(59, 130, 246, 0.05);
+}
 
-/* Disable will-change in edit mode */
+/* Performance optimizations */
 .edit-view-mode .artwork,
 .edit-select-mode .artwork {
     will-change: auto !important;
 }
 
-/* Contain layout changes */
 .edit-view-mode .gallery,
 .edit-select-mode .gallery {
     contain: layout style;
 }
 
-/* Force hardware acceleration off for better performance */
 .edit-view-mode .artwork-container img,
 .edit-select-mode .artwork-container img {
     transform: translateZ(0) !important;
     backface-visibility: visible !important;
+}
+
+/* ✅ ENHANCED: Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .artwork.selected::after,
+    .edit-select-mode::before {
+        animation: none !important;
+    }
+    
+    .artwork-checkbox,
+    .edit-select-mode .artwork:hover .artwork-checkbox {
+        transition: none !important;
+        transform: none !important;
+    }
 }
