@@ -23,6 +23,7 @@ class EditModeManager {
         this.currentMode = this.MODES.NORMAL;
         this.selectedItems = new Set();
         this.wasInSelectMode = false;
+        
         // UI Elements
         this.toggleButton = null;
         this.editViewHeader = null;
@@ -273,6 +274,13 @@ class EditModeManager {
     }
     
     exitCurrentMode(targetMode = null) {
+        console.log(`🔄 Exiting ${this.currentMode} mode`);
+        
+        // ✅ FIX: Properly re-enable lightbox if coming from select mode
+        if (this.currentMode === this.MODES.EDIT_SELECT) {
+            this.enableLightboxInteractions();
+        }
+        
         // Remove all mode classes
         document.body.classList.remove('edit-view-mode', 'edit-select-mode', 'disable-lightbox');
         
@@ -281,8 +289,9 @@ class EditModeManager {
         this.editSelectHeader.style.display = 'none';
         this.actionBar.classList.remove('visible');
         
-        // Only show floating buttons when going to Normal mode
+        // ✅ FIX: Always refresh floating buttons list before showing
         if (targetMode === this.MODES.NORMAL) {
+            this.refreshFloatingButtons();
             this.showFloatingButtons();
         }
         
@@ -297,6 +306,8 @@ class EditModeManager {
         
         // Re-enable animations and interactions
         this.enableAnimations();
+        
+        console.log(`✅ Exited ${this.currentMode} mode successfully`);
     }
     
     enterNewMode(mode) {
@@ -331,7 +342,8 @@ class EditModeManager {
         // Show edit view header
         this.editViewHeader.style.display = 'block';
         
-        // Always hide floating buttons in any edit mode
+        // ✅ FIX: Refresh floating buttons list before hiding
+        this.refreshFloatingButtons();
         this.hideFloatingButtons();
         this.hideEditButton();
         
@@ -344,12 +356,14 @@ class EditModeManager {
         
         // Disable heavy animations for performance
         this.disableAnimations();
+        
+        console.log('✅ Edit View Mode entered successfully');
     }
     
     enterEditSelectMode() {
         console.log('☑️ Entering Edit Select Mode');
         
-        // ✅ FIXED: Add multiple classes to disable lightbox
+        // Add multiple classes to disable lightbox
         document.body.classList.add('edit-view-mode', 'edit-select-mode', 'disable-lightbox');
         
         // Show edit select header
@@ -359,6 +373,7 @@ class EditModeManager {
         this.editViewHeader.style.display = 'none';
         
         // Ensure floating buttons are hidden
+        this.refreshFloatingButtons();
         this.hideFloatingButtons();
         this.hideEditButton();
         
@@ -371,15 +386,30 @@ class EditModeManager {
         // ✅ ENHANCED: Disable lightbox interactions completely
         this.disableLightboxInteractions();
         
-        console.log('🚫 Lightbox interactions disabled in select mode');
+        console.log('✅ Edit Select Mode entered, lightbox disabled');
+    }
+
+    
+    refreshFloatingButtons() {
+        // ✅ FIX: Re-find floating buttons each time to handle dynamic DOM changes
+        this.floatingButtons = [
+            document.querySelector('.theme-toggle-container'),
+            document.querySelector('.metadata-viewer-toggle'), 
+            document.querySelector('.fab'),
+            document.querySelector('.edit-mode-button')
+        ].filter(Boolean);
+        
+        console.log(`🔄 Refreshed floating buttons: found ${this.floatingButtons.length} buttons`);
     }
     
     hideFloatingButtons() {
         this.floatingButtons.forEach(button => {
             if (button && button !== this.toggleButton) {
-                // Store original display state if not already stored
-                if (!button.dataset.originalDisplay) {
-                    button.dataset.originalDisplay = button.style.display || '';
+                // ✅ FIX: Better handling of original display state
+                if (!button.hasAttribute('data-original-display')) {
+                    const computedDisplay = window.getComputedStyle(button).display;
+                    const inlineDisplay = button.style.display;
+                    button.setAttribute('data-original-display', inlineDisplay || computedDisplay || '');
                 }
                 button.style.display = 'none';
             }
@@ -390,10 +420,14 @@ class EditModeManager {
     showFloatingButtons() {
         this.floatingButtons.forEach(button => {
             if (button && button !== this.toggleButton) {
-                // Restore original display state
-                button.style.display = button.dataset.originalDisplay || '';
-                // Clean up the stored state
-                delete button.dataset.originalDisplay;
+                // ✅ FIX: Properly restore original display state
+                const originalDisplay = button.getAttribute('data-original-display');
+                if (originalDisplay !== null) {
+                    button.style.display = originalDisplay === 'none' ? '' : originalDisplay;
+                    button.removeAttribute('data-original-display');
+                } else {
+                    button.style.display = '';
+                }
             }
         });
         console.log('👀 Floating buttons shown');
@@ -651,6 +685,7 @@ class EditModeManager {
         const artworkImages = document.querySelectorAll('.edit-select-mode .artwork img');
         artworkImages.forEach(img => {
             img.style.pointerEvents = 'none';
+            img.style.userSelect = 'none';
         });
         
         console.log('✅ Lightbox interactions disabled');
@@ -659,15 +694,21 @@ class EditModeManager {
     enableLightboxInteractions() {
         console.log('✅ Re-enabling lightbox interactions...');
         
-        // Remove disable classes
+        // ✅ FIX: Remove ALL disable states
         document.body.classList.remove('disable-lightbox');
         document.body.removeAttribute('data-lightbox-disabled');
         
-        // Re-enable pointer events on images
+        // Re-enable pointer events on ALL images (not just select mode)
         const artworkImages = document.querySelectorAll('.artwork img');
         artworkImages.forEach(img => {
             img.style.pointerEvents = '';
+            img.style.userSelect = '';
         });
+        
+        // ✅ FIX: Force lightbox to refresh its checks
+        if (window.galleryLightbox && window.galleryLightbox.refresh) {
+            window.galleryLightbox.refresh();
+        }
         
         console.log('✅ Lightbox interactions re-enabled');
     }
@@ -717,14 +758,16 @@ class EditModeManager {
 				window.artGalleryApp.updateImageCounter();
 			}
 			
-			// ✅ CODE MỚI ĐƯỢC THÊM VÀO ĐÂY:
-			// Auto return to edit-view mode after successful delete
+			// ✅ FIX: Shorter delay for better UX + ensure lightbox re-enabled
 			setTimeout(() => {
 				this.switchToMode(this.MODES.EDIT_VIEW);
+				// ✅ Additional safety check
+				this.enableLightboxInteractions();
+				
 				if (window.toast) {
 					window.toast.info(`Returned to edit view. Deleted ${count} items.`);
 				}
-			}, 1000); // Give time for success message to show
+			}, 500); // Reduced from 1000ms to 500ms
 			
 		} catch (error) {
 			console.error('Delete error:', error);
@@ -770,13 +813,15 @@ class EditModeManager {
 				window.toast.success(`${count} items moved to top!`);
 			}
 			
-			// Auto return to edit-view mode after successful move
+			// ✅ FIX: Same improvements as delete
 			setTimeout(() => {
 				this.switchToMode(this.MODES.EDIT_VIEW);
+				this.enableLightboxInteractions();
+				
 				if (window.toast) {
 					window.toast.info(`Returned to edit view. ${count} items moved to top.`);
 				}
-			}, 1000);
+			}, 500);
 		} else {
 			if (window.toast) {
 				window.toast.error('Failed to update order on server');
@@ -820,13 +865,15 @@ class EditModeManager {
 				window.toast.success(`${count} items moved to bottom!`);
 			}
 			
-			// Auto return to edit-view mode after successful move
+			// ✅ FIX: Same improvements as others
 			setTimeout(() => {
 				this.switchToMode(this.MODES.EDIT_VIEW);
+				this.enableLightboxInteractions();
+				
 				if (window.toast) {
 					window.toast.info(`Returned to edit view. ${count} items moved to bottom.`);
 				}
-			}, 1000);
+			}, 500);
 		} else {
 			if (window.toast) {
 				window.toast.error('Failed to update order on server');
@@ -1179,5 +1226,5 @@ class EditModeManager {
 
 document.addEventListener('DOMContentLoaded', () => {
     window.editModeManager = new EditModeManager();
-    console.log('✨ Enhanced Edit Mode Manager with Lightbox Disable initialized');
+    console.log('✨ Enhanced Edit Mode Manager with FIXED Lightbox & Floating Buttons');
 });
