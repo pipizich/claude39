@@ -898,9 +898,11 @@
 }
 
 [data-theme="light"] .prompt-header {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: linear-gradient(135deg, #007aff 0%, #00bcd4 100%) !important; /* Blue to cyan gradient */
+    border-bottom: 1px solid rgba(0, 122, 255, 0.3) !important;
+    border-radius: 8px 8px 0 0; /* Apple rounded corners */
 }
+
 
 [data-theme="light"] .prompt-header h6 {
     color: #ffffff;
@@ -913,20 +915,30 @@
 }
 
 [data-theme="light"] .section-header {
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f2f2f7 100%); /* White gradient */
+    border-bottom: 1px solid rgba(142, 142, 147, 0.3);
+    border-radius: 8px 8px 0 0; /* Apple rounded corners */
 }
 
 [data-theme="light"] .section-header:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, #f2f2f7 0%, #e5e5ea 100%); /* Lighter white gradient on hover */
 }
 
 [data-theme="light"] .section-header h5 {
-    color: #ffffff;
+    color: #1c1c1e; /* Dark text on white gradient */
 }
 
 [data-theme="light"] .toggle-icon {
-    color: #a8a8a8;
+    color: #8e8e93; /* Apple secondary text */
+}
+
+[data-theme="light"] .negative-prompt-section .prompt-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8a80 100%) !important; /* Lighter red gradient */
+    border-bottom: 1px solid rgba(255, 69, 58, 0.3) !important;
+}
+
+[data-theme="light"] .negative-prompt-section .prompt-header h6 {
+    color: #ffffff; /* White text on gradient */
 }
 
 /* Light mode buttons */
