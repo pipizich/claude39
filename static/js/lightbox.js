@@ -1135,6 +1135,7 @@ class LightboxEditing {
 class LightboxMetadata {
     constructor(lightboxCore) {
         this.core = lightboxCore;
+        this.copyTimeouts = new Map(); // ✅ THÊM DÒNG NÀY
         
         this.init();
     }
@@ -1317,7 +1318,7 @@ class LightboxMetadata {
             html += `
                 <div class="prompt-section negative-prompt-section">
                     <div class="prompt-header">
-                        <h6><i class="fa-solid fa-do-not-enter"></i> NEGATIVE PROMPT</h6>
+                        <h6><i class="fa-light fa-hexagon-minus"></i> NEGATIVE PROMPT</h6>
                         <button class="prompt-copy-btn" onclick="window.galleryLightbox?.copyToClipboard?.('${this.core.escapeForJs(negativePrompt)}')"><i class="fa-thin fa-clipboard"></i> Copy</button>
                     </div>
                     <div class="prompt-content ${isLongNegative ? 'collapsed' : 'expanded'}" id="${negPromptId}">
@@ -1433,26 +1434,36 @@ class LightboxMetadata {
 			const button = window.event?.target || document.activeElement;
 			
 			if (button && button.tagName === 'BUTTON') {
-				const originalHTML = button.innerHTML;
-				const originalBg = button.style.background;
-				const originalColor = button.style.color;
+				// ✅ Cancel timeout cũ nếu có
+				const existingTimeout = this.copyTimeouts.get(button);
+				if (existingTimeout) {
+					clearTimeout(existingTimeout.timeout);
+					// Restore về state gốc ngay lập tức
+					button.innerHTML = existingTimeout.originalHTML;
+					button.style.background = existingTimeout.originalBg;
+					button.style.color = existingTimeout.originalColor;
+					button.style.transform = existingTimeout.resetTransform;
+				}
+				
+				// ✅ Lưu state gốc (chỉ lưu nếu chưa có timeout đang chạy)
+				const originalState = {
+					originalHTML: existingTimeout ? existingTimeout.originalHTML : button.innerHTML,
+					originalBg: existingTimeout ? existingTimeout.originalBg : button.style.background,
+					originalColor: existingTimeout ? existingTimeout.originalColor : button.style.color,
+					resetTransform: button.classList.contains('copy-btn') ? 'translateY(-50%)' : ''
+				};
 				
 				// Check class để áp dụng transform phù hợp
 				let scaleTransform;
-				let resetTransform;
-				
 				if (button.classList.contains('copy-btn')) {
 					// Button copy metadata - có translateY(-50%)
 					scaleTransform = 'translateY(-50%) scale(1.05)';
-					resetTransform = 'translateY(-50%)';
 				} else if (button.classList.contains('prompt-copy-btn')) {
 					// Button copy prompt - chỉ cần scale
 					scaleTransform = 'scale(1.05)';
-					resetTransform = '';
 				} else {
 					// Button khác - chỉ cần scale
 					scaleTransform = 'scale(1.05)';
-					resetTransform = '';
 				}
 				
 				// Apply success feedback
@@ -1461,12 +1472,20 @@ class LightboxMetadata {
 				button.style.color = 'white';
 				button.style.transform = scaleTransform;
 				
-				setTimeout(() => {
-					button.innerHTML = originalHTML;
-					button.style.background = originalBg;
-					button.style.color = originalColor;
-					button.style.transform = resetTransform;
+				// ✅ Set timeout mới
+				const timeout = setTimeout(() => {
+					button.innerHTML = originalState.originalHTML;
+					button.style.background = originalState.originalBg;
+					button.style.color = originalState.originalColor;
+					button.style.transform = originalState.resetTransform;
+					this.copyTimeouts.delete(button); // ✅ Xóa khỏi Map sau khi restore
 				}, 1000);
+				
+				// ✅ Lưu timeout và state vào Map
+				this.copyTimeouts.set(button, {
+					timeout,
+					...originalState
+				});
 			}
 			
 			if (window.toast) {
